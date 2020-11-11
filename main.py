@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, csv
 from sqlite3 import Error
 
 def openConnection(_dbFile):
@@ -30,6 +30,16 @@ def closeConnection(_conn, _dbFile):
     print("++++++++++++++++++++++++++++++++++")
 
 
+def dropTables(con):
+    con.execute("DROP TABLE SeattleRainfall")
+    con.execute("DROP TABLE AnnualReport")
+    con.execute("DROP TABLE MonthlyReport")
+    con.execute("DROP TABLE DailyReport")
+    con.execute("DROP TABLE RangedReport")
+
+    con.commit()
+
+
 def createTables(con):
     print("++++++++++++++++++++++++++++++++++")
     print("Creating tables")
@@ -38,7 +48,7 @@ def createTables(con):
         sql = """ 
             CREATE TABLE IF NOT EXISTS SeattleRainfall (
                 DATE DATE NOT NULL, 
-                PRPC REAL NOT NULL, 
+                PRCP REAL NOT NULL, 
                 TMAX INT NOT NULL, 
                 TMIN INT NOT NULL, 
                 RAIN CHAR NOT NULL
@@ -68,7 +78,7 @@ def createTables(con):
         sql = """
             CREATE TABLE IF NOT EXISTS DailyReport (
                 dr_date DATE NOT NULL, 
-                dr_prpc REAL NOT NULL,
+                dr_prcp REAL NOT NULL,
                 dr_tmax INT NOT NULL,
                 dr_tmin INT NOT NULL, 
                 dr_rain CHAR NOT NULL
@@ -79,7 +89,7 @@ def createTables(con):
             CREATE TABLE IF NOT EXISTS RangedReport (
                 rr_startDate DATE NOT NULL, 
                 rr_endDate  DATE NOT NULL, 
-                rr_avgPrpc  REAL NOT NULL, 
+                rr_avgPrcp  REAL NOT NULL, 
                 rr_avgTemp  REAL NOT NULL,
                 rr_numRainDays  INT NOT NULL
             ) """ 
@@ -94,13 +104,40 @@ def createTables(con):
 
     print("++++++++++++++++++++++++++++++++++")
 
+
+def populateSeattleRainfall(_conn):
+    print("++++++++++++++++++++++++++++++++++")
+    print("Populating SeattleRainfall")
+    
+    try:
+        cur = _conn.cursor()
+
+        with open('Data/seattleWeather_1948-2017.csv','r') as fin: 
+            # csv.DictReader uses first line in file for column headings by default
+            dr = csv.DictReader(fin) # comma is default delimiter
+            to_db = [(i['DATE'], i['PRCP'], i['TMAX'], i['TMIN'], i['RAIN']) for i in dr]
+
+        cur.executemany("INSERT INTO SeattleRainfall VALUES (?, ?, ?, ?, ?);", to_db)
+        _conn.commit()
+        print("Bulk loading was successful")
+
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+    print("++++++++++++++++++++++++++++++++++")
+
+
 def main():
-    database = r"Data/databse.sqlite"
+    database = r"Data/database.sqlite"
 
     conn = openConnection(database)
 
     with conn:
+        dropTables(conn)
         createTables(conn)
+
+        populateSeattleRainfall(conn)
 
     closeConnection(conn, database)
 

@@ -1,4 +1,4 @@
-/* Queries to create tables */ 
+/* Created this file to test the queries and make sure they work correctly */ 
 
 --Table containing all of the data, from 1948 to 2017
 CREATE TABLE IF NOT EXISTS SeattleRainfall (
