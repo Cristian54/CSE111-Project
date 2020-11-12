@@ -31,11 +31,11 @@ def closeConnection(_conn, _dbFile):
 
 
 def dropTables(con):
-    con.execute("DROP TABLE SeattleRainfall")
-    con.execute("DROP TABLE AnnualReport")
-    con.execute("DROP TABLE MonthlyReport")
-    con.execute("DROP TABLE DailyReport")
-    con.execute("DROP TABLE RangedReport")
+    con.execute("DROP TABLE IF EXISTS SeattleRainfall")
+    con.execute("DROP TABLE IF EXISTS AnnualReport")
+    con.execute("DROP TABLE IF EXISTS MonthlyReport")
+    con.execute("DROP TABLE IF EXISTS DailyReport")
+    con.execute("DROP TABLE IF EXISTS RangedReport")
 
     con.commit()
 
@@ -60,8 +60,7 @@ def createTables(con):
                 ar_year     INT NOT NULL, 
                 ar_avgPrcp   REAL NOT NULL, 
                 ar_avgTemp  REAL NOT NULL, 
-                ar_numRainDays INT NOT NULL, 
-                ar_rainPCT REAL NOT NULL
+                ar_numRainDays INT NOT NULL 
             ) """
         con.execute(sql)
 
@@ -127,6 +126,25 @@ def populateSeattleRainfall(_conn):
 
     print("++++++++++++++++++++++++++++++++++")
 
+def getAnnualReport(con):
+    print("Enter a year: ")
+    year = input()
+
+    sql = """ 
+        SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
+            SELECT COUNT(RAIN)
+            FROM SeattleRainfall
+            WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
+        ) rainDays
+        FROM SeattleRainfall
+        WHERE strftime('%Y', DATE) = ? 
+        """
+    con.execute(sql, (year, year,)) 
+
+    cur = con.cursor()
+    row = cur.fetchall()
+
+    print(row)
 
 def main():
     database = r"Data/database.sqlite"
@@ -134,10 +152,12 @@ def main():
     conn = openConnection(database)
 
     with conn:
-        dropTables(conn)
-        createTables(conn)
+        #dropTables(conn)
+        #createTables(conn)
 
-        populateSeattleRainfall(conn)
+        #populateSeattleRainfall(conn)
+
+        getAnnualReport(conn)
 
     closeConnection(conn, database)
 
