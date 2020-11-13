@@ -143,6 +143,28 @@ WHERE (TMAX - TMIN) = (
     FROM SeattleRainfall
 ) 
 
+-- reporting days where it rained but temperature was relatively average for seattle
+    --source https://www.tripsavvy.com/does-it-really-rain-in-seattle-4159184#:~:text=On%20average%2C%20Seattle%20gets%2038,time%2C%20depending%20on%20the%20season.
+select distinct DATE, TMAX, TMIN, RAIN
+from SeattleRainfall
+WHERE RAIN = 'TRUE' AND
+TMAX >= '70' AND
+TMIN >= '40'
+order by DATE
+
+-- what is current number of data entry within the database
+select count(*) 
+from SeattleRainfall
+
+-- showing count where there is rain and no rain
+select count(rain1) as rained, count(rain2) as noRain
+from (
+    select 
+    case when rain = 'TRUE' then rain end as rain1,
+    case when rain = 'FALSE' then rain end as rain2
+    from SeattleRainfall
+) as x
+
 --insert query adding data into SeattleRainfall
 INSERT INTO SeattleRainfall (DATE, PRCP, TMAX, TMIN, RAIN) 
 VALUES ('2020-11-11', '0', '46', '40', 'FALSE')
