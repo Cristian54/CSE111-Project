@@ -84,6 +84,7 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
 FROM SeattleRainfall
 WHERE DATE >= "1980-10-13" AND DATE <= "1985-03-25"
 
+
 --Query to only get the number of rainy days from a week, month, year or any other period of time
 SELECT COUNT(RAIN)
 FROM SeattleRainfall
@@ -128,3 +129,38 @@ SELECT strftime('%m-%Y', DATE), MAX(TMAX), MIN(TMIN)
 FROM SeattleRainfall
 WHERE strftime('%Y', DATE) = '1999'
 GROUP BY strftime('%m', DATE)
+
+--Given a day (month-day), return the statistics of that day from each year 
+SELECT * 
+FROM SeattleRainfall
+WHERE strftime('%m-%d', DATE) = '12-31'
+
+--Get the day with the biggest difference between its highest and lowest recorded temperature 
+SELECT *
+FROM SeattleRainfall
+WHERE (TMAX - TMIN) = (
+    SELECT MAX(TMAX - TMIN)
+    FROM SeattleRainfall
+) 
+
+--insert query adding data into SeattleRainfall
+INSERT INTO SeattleRainfall (DATE, PRCP, TMAX, TMIN, RAIN) 
+VALUES ('2020-11-11', '0', '46', '40', 'FALSE')
+
+--update query on info from above
+UPDATE SeattleRainfall
+SET RAIN = 'TRUE'
+WHERE DATE = '2020-11-11'
+
+--delete query (delete above)
+DELETE FROM SeattleRainfall
+WHERE DATE = '2020-11-11'
+
+--Delete entries that don't have info available 
+DELETE FROM SeattleRainfall
+WHERE RAIN = 'NA'
+
+DELETE FROM AnnualReport
+DELETE FROM MonthlyReport
+DELETE FROM DailyReport
+DELETE FROM RangedReport
