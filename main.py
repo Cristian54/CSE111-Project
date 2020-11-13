@@ -90,7 +90,8 @@ def createTables(con):
                 rr_endDate  DATE NOT NULL, 
                 rr_avgPrcp  REAL NOT NULL, 
                 rr_avgTemp  REAL NOT NULL,
-                rr_numRainDays  INT NOT NULL
+                rr_numRainDays  INT NOT NULL,
+                rr_totalDays    INT NOT NULL
             ) """ 
         con.execute(sql)
 

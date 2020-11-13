@@ -19,11 +19,11 @@ CREATE TABLE IF NOT EXISTS AnnualReport (
 
 --A year's data broken down into months, year given by the user
 CREATE TABLE IF NOT EXISTS MonthlyReport (
-    mr_year INT NOT NULL, 
-    mr_month INT NOT NULL, 
-    mr_avgPrcp  REAL NOT NULL,
-    mr_avgTemp  REAL NOT NULL,
-    mr_numRainDays INT NOT NULL
+    mr_year INT, 
+    mr_month INT, 
+    mr_avgPrcp  REAL,
+    mr_avgTemp  REAL,
+    mr_numRainDays INT
 )
 
 --Daily report from a given month
@@ -37,13 +37,13 @@ CREATE TABLE IF NOT EXISTS DailyReport (
 
 --Report from a given range of dates
 CREATE TABLE IF NOT EXISTS RangedReport (
-    rr_startDate DATE NOT NULL, 
-    rr_endDate  DATE NOT NULL, 
+    rr_startDate DATE, 
+    rr_endDate  DATE, 
     rr_avgPrpc  REAL NOT NULL, 
     rr_avgTemp  REAL NOT NULL,
-    rr_numRainDays  INT NOT NULL
+    rr_numRainDays  INT NOT NULL,
+    rr_totalDays INT NOT NULL
 )
-
 
 --Query to get an annual report. 
 INSERT INTO AnnualReport (ar_avgPrcp, ar_avgTemp, ar_numRainDays)
@@ -55,5 +55,31 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
 FROM SeattleRainfall
 WHERE strftime('%Y', DATE) = '1996'
 
+--Query to get a monthly report
+INSERT INTO MonthlyReport (mr_avgPrcp, mr_avgTemp, mr_numRainDays)
+SELECT strftime('%m-%Y', DATE), AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
+    SELECT COUNT(RAIN)
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1948'
+    GROUP BY strftime('%m', DATE)
+) rainDays
+FROM SeattleRainfall
+WHERE strftime('%Y', DATE) = '1948'
+GROUP BY strftime('%m', DATE)
 
+--Query to get a daily report from a specified month
+INSERT INTO DailyReport
+SELECT *
+FROM SeattleRainfall
+WHERE DATE >= "1996-01-01" AND DATE <= "1996-01-31"
+ORDER BY DATE 
 
+--Query to get a ranged report (specified start and end dates)
+INSERT INTO RangedReport (rr_avgPrpc, rr_avgTemp, rr_numRainDays, rr_totalDays)
+SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
+    SELECT COUNT(RAIN)
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE' AND (DATE >= "1980-10-13" AND DATE <= "1985-03-25")
+) rainn, COUNT(DATE)
+FROM SeattleRainfall
+WHERE DATE >= "1980-10-13" AND DATE <= "1985-03-25"
