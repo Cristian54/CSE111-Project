@@ -128,3 +128,73 @@ SELECT strftime('%m-%Y', DATE), MAX(TMAX), MIN(TMIN)
 FROM SeattleRainfall
 WHERE strftime('%Y', DATE) = '1999'
 GROUP BY strftime('%m', DATE)
+
+
+
+
+
+-- data of when rain is present for the day
+select * 
+from SeattleRainfall
+where RAIN = 'TRUE'
+
+-- data in seattle where data ranges from 2000-latest data
+select *
+from SeattleRainfall
+where DATE > '2000-%-%'
+order by DATE DESC
+
+-- reporting days where it rained but temperature was relatively average for seattle
+    --source https://www.tripsavvy.com/does-it-really-rain-in-seattle-4159184#:~:text=On%20average%2C%20Seattle%20gets%2038,time%2C%20depending%20on%20the%20season.
+select distinct DATE, TMAX, TMIN, RAIN
+from SeattleRainfall
+WHERE RAIN = 'TRUE' AND
+TMAX >= '70' AND
+TMIN >= '40'
+order by DATE
+
+-- what is current number of data entry within the database
+select count(*)
+from SeattleRainfall
+
+-- average max and min temp within 20 years from 1990 to 2010
+select avg(TMAX), avg(TMIN)
+from SeattleRainfall
+where DATE < '2010-12-31' AND
+DATE > '1990-1-1'
+
+-- shows the data within last year,since last data ended 2017-12-14, it will be in year 2017
+select *
+from SeattleRainfall
+where DATE < '2017-12-14' AND
+DATE > '2017-1-1'
+order by DATE DESC
+
+-- look for day(s) where seattle had 0 degree or less even though it did not rain
+select *
+from SeattleRainfall
+where TMIN <=  '0' AND
+rain = 'FALSE'
+
+-- showing count where there is rain and no rain
+select count(rain1) as rained, count(rain2) as noRain
+from (
+    select 
+    case when rain = 'TRUE' then rain end as rain1,
+    case when rain = 'FALSE' then rain end as rain2
+    from SeattleRainfall
+) as x
+
+--  insert query adding data into SeattleRainfall
+insert into SeattleRainfall ('DATE', 'PRCP', 'TMAX', 'TMIN', 'RAIN') VALUES
+('2020-11-11', '0', '46', '40', 'FALSE')
+
+-- update query on info from above
+update SeattleRainfall
+SET RAIN = 'TRUE'
+where DATE = '2020-11-11'
+
+-- delete query (delete above)
+delete 
+from SeattleRainfall
+where DATE = '2020-11-11'
