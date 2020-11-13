@@ -65,9 +65,8 @@ def createTables(con):
         con.execute(sql)
 
         sql = """
-            CREATE TABLE IF NOT EXISTS MonthlyReport (
-                mr_year INT NOT NULL, 
-                mr_month INT NOT NULL, 
+            CREATE TABLE IF NOT EXISTS MonthlyReport ( 
+                mr_monthYear DATE NOT NULL, 
                 mr_avgPrcp  REAL NOT NULL,
                 mr_avgTemp  REAL NOT NULL,
                 mr_numRainDays INT NOT NULL
