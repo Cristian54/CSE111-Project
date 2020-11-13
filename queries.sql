@@ -80,6 +80,51 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
     SELECT COUNT(RAIN)
     FROM SeattleRainfall
     WHERE RAIN = 'TRUE' AND (DATE >= "1980-10-13" AND DATE <= "1985-03-25")
-) rainn, COUNT(DATE)
+) rainDays, COUNT(DATE)
 FROM SeattleRainfall
 WHERE DATE >= "1980-10-13" AND DATE <= "1985-03-25"
+
+--Query to only get the number of rainy days from a week, month, year or any other period of time
+SELECT COUNT(RAIN)
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE' AND DATE >= "2000-01-01" AND DATE <= "2010-12-31"
+
+--Find the year with the most rainy days 
+--Alternative query: list all years by the amount of rainy days they had (remove limit)
+SELECT strftime('%Y', DATE), COUNT(RAIN)
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE'
+GROUP BY strftime('%Y', DATE)
+ORDER BY COUNT(RAIN) DESC
+LIMIT 1 
+
+--Find the year with the least rainy days
+SELECT strftime('%Y', DATE), COUNT(RAIN)
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE'
+GROUP BY strftime('%Y', DATE)
+ORDER BY COUNT(RAIN) ASC
+LIMIT 1 
+
+--List the coldest day(s), optionally only looking at rainy days or days without rain. 
+--Can also add another condition to find the coldest day with the least/highest amount of precipitation 
+SELECT DATE, MIN(TMIN)
+FROM SeattleRainfall
+--WHERE RAIN = 'FALSE'  
+GROUP BY strftime('%d', DATE) 
+ORDER BY MIN(TMIN) ASC
+LIMIT 10
+
+--List the hottest day(s)
+SELECT DATE, MAX(TMAX)
+FROM SeattleRainfall
+--WHERE RAIN = 'FALSE'
+GROUP BY strftime('%d', DATE) 
+ORDER BY MAX(TMAX) DESC
+LIMIT 10
+
+--List the hottest and coldest day from every month in a specified year 
+SELECT strftime('%m-%Y', DATE), MAX(TMAX), MIN(TMIN)
+FROM SeattleRainfall
+WHERE strftime('%Y', DATE) = '1999'
+GROUP BY strftime('%m', DATE)
