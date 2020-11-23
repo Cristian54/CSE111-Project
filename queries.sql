@@ -49,10 +49,10 @@ INSERT INTO AnnualReport (ar_avgPrcp, ar_avgTemp, ar_numRainDays)
 SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
     SELECT COUNT(RAIN)
     FROM SeattleRainfall
-    WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1996'
-) rainn
+    WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1999'
+) rainDays
 FROM SeattleRainfall
-WHERE strftime('%Y', DATE) = '1996'
+WHERE strftime('%Y', DATE) = '1999'
 
 --Query to get a monthly report
 INSERT INTO MonthlyReport (mr_monthYear, mr_avgPrcp, mr_avgTemp)

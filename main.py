@@ -127,9 +127,8 @@ def populateSeattleRainfall(_conn):
     print("++++++++++++++++++++++++++++++++++")
 
 def getAnnualReport(con):
-    print("Enter a year: ")
-    year = input()
-
+    year = input("Enter a year: ")
+    
     sql = """ 
         SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
             SELECT COUNT(RAIN)
@@ -139,13 +138,31 @@ def getAnnualReport(con):
         FROM SeattleRainfall
         WHERE strftime('%Y', DATE) = ? 
         """
-    con.execute(sql, (year, year,)) 
-
     cur = con.cursor()
-    row = cur.fetchall()
+    cur.execute(sql, (year, year,)) 
+    row = cur.fetchone()
 
     print(row)
 
+def getLeastAndMostRain(conn):
+    print("Do you want to get the year with the most or least rain? (M/L)")
+    choice = input()
+    
+    if choice == 'M':
+        sql = """ 
+            SELECT strftime('%Y', DATE), COUNT(RAIN)
+            FROM SeattleRainfall
+            WHERE RAIN = 'TRUE'
+            GROUP BY strftime('%Y', DATE)
+            ORDER BY COUNT(RAIN) DESC
+            LIMIT 1 """
+            
+        cur = conn.cursor()
+        cur.execute(sql)
+        
+        row = cur.fetchone()
+        print(row)
+    
 def main():
     database = r"Data/database.sqlite"
 
