@@ -162,6 +162,42 @@ def getLeastAndMostRain(conn):
         
         row = cur.fetchone()
         print(row)
+
+def dated_avg_temp_dates(conn):
+    print("this function lists out the date that corresponds to the average weather in Seattle which is maximum temperature at 70, and lowest at 40 .")
+    sql = """select distinct DATE, TMAX, TMIN, RAIN
+                from SeattleRainfall
+                WHERE RAIN = 'TRUE' AND
+                    TMAX >= '70' AND
+                    TMIN >= '40'
+                    order by DATE
+    """
+    cur = conn.cursor()
+    cur.execute(sql)
+        
+    row = cur.fetchone()
+    print(row)
+
+#     suppname = input("What suppier name do you want to find? ")
+#conn.execute("SELECT s_name, SUM(w_capacity), ps_availqty FROM supplier, warehouse, partsupp WHERE s_suppkey  = w_suppkey AND ps_suppkey = s_suppkey AND s_name = ?",[suppname])
+
+def dated_avg_custom(conn):
+    print("please specify a TMIN and TMAX to find dates within those temperature")
+    max = int(input("enter the highest temperature "))
+    min = int(input("enter the lowest temperature "))
+    sql = """
+    select distinct DATE, TMAX, TMIN, RAIN
+                from SeattleRainfall
+                WHERE RAIN = 'TRUE' AND
+                    TMAX >= ? AND
+                    TMIN >= ?
+                    order by DATE
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (max, min))
+        
+    row = cur.fetchone()
+    print(row)
     
 def main():
     database = r"Data/database.sqlite"
