@@ -103,6 +103,12 @@ def createTables(con):
 
     print("++++++++++++++++++++++++++++++++++")
 
+def deleteTables(conn):
+    conn.execute("DELETE FROM AnnualReport")
+    conn.execute("DELETE FROM DailyReport")
+    conn.execute("DELETE FROM RangedReport")
+    
+    conn.commit()
 
 def populateSeattleRainfall(_conn):
     print("++++++++++++++++++++++++++++++++++")
@@ -140,11 +146,15 @@ def getAnnualReport(con):
         """
     cur = con.cursor()
     cur.execute(sql, (year, year,)) 
-    row = cur.fetchone()
+    report = cur.fetchone()
+    
+    cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[1], report[2],))
+    con.commit()
+    
+    print("Annual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[1], "\n Total number of rainy days:", report[2])
+    
 
-    print(row)
-
-def getLeastAndMostRain(conn):
+def getLeastOrMostRain(conn):
     print("Do you want to get the year with the most or least rain? (M/L)")
     choice = input()
     
@@ -161,8 +171,23 @@ def getLeastAndMostRain(conn):
         cur.execute(sql)
         
         row = cur.fetchone()
-        print(row)
-    
+        print("From 1948 to 2017, the year with the most rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
+        
+    elif choice == 'L':
+        sql = """ 
+            SELECT strftime('%Y', DATE), COUNT(RAIN)
+            FROM SeattleRainfall
+            WHERE RAIN = 'TRUE'
+            GROUP BY strftime('%Y', DATE)
+            ORDER BY COUNT(RAIN) ASC
+            LIMIT 1 """
+            
+        cur = conn.cursor()
+        cur.execute(sql)
+        
+        row = cur.fetchone()
+        print("From 1948 to 2017, the year with the least rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
+        
 def main():
     database = r"Data/database.sqlite"
 
@@ -174,7 +199,11 @@ def main():
 
         #populateSeattleRainfall(conn)
 
-        getAnnualReport(conn)
+        #getAnnualReport(conn)
+        
+        getLeastOrMostRain(conn)
+        
+        #deleteTables(conn)
 
     closeConnection(conn, database)
 
