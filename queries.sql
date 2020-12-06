@@ -145,6 +145,7 @@ WHERE (TMAX - TMIN) = (
 
 -- reporting days where it rained but temperature was relatively average for seattle
     --source https://www.tripsavvy.com/does-it-really-rain-in-seattle-4159184#:~:text=On%20average%2C%20Seattle%20gets%2038,time%2C%20depending%20on%20the%20season.
+--added to our python app
 select distinct DATE, TMAX, TMIN, RAIN
 from SeattleRainfall
 WHERE RAIN = 'TRUE' AND
