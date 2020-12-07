@@ -16,7 +16,6 @@ def openConnection(_dbFile):
 
     return conn
 
-
 def closeConnection(_conn, _dbFile):
     print("++++++++++++++++++++++++++++++++++")
     print("Close database: ", _dbFile)
@@ -29,7 +28,6 @@ def closeConnection(_conn, _dbFile):
 
     print("++++++++++++++++++++++++++++++++++")
 
-
 def dropTables(con):
     con.execute("DROP TABLE IF EXISTS SeattleRainfall")
     con.execute("DROP TABLE IF EXISTS AnnualReport")
@@ -38,7 +36,6 @@ def dropTables(con):
     con.execute("DROP TABLE IF EXISTS RangedReport")
 
     con.commit()
-
 
 def createTables(con):
     print("++++++++++++++++++++++++++++++++++")
@@ -136,24 +133,23 @@ def getAnnualReport(con):
     year = input("Enter a year: ")
     
     sql = """ 
-        SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
-            SELECT COUNT(RAIN)
+        SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
+            SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
             FROM SeattleRainfall
-            WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
-        ) rainDays
+            WHERE strftime('%Y', DATE) = ?
+        ) avgTemp
         FROM SeattleRainfall
-        WHERE strftime('%Y', DATE) = ? 
+        WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
         """
     cur = con.cursor()
     cur.execute(sql, (year, year,)) 
     report = cur.fetchone()
     
-    cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[1], report[2],))
+    cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[2], report[1],))
     con.commit()
     
-    print("Annual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[1], "\n Total number of rainy days:", report[2])
+    print("Annual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
     
-
 def getLeastOrMostRain(conn):
     print("Do you want to get the year with the most or least rain? (M/L)")
     choice = input()
@@ -171,7 +167,6 @@ def getLeastOrMostRain(conn):
         cur.execute(sql)
         
         row = cur.fetchone()
-<<<<<<< HEAD
         print("From 1948 to 2017, the year with the most rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
         
     elif choice == 'L':
@@ -188,47 +183,60 @@ def getLeastOrMostRain(conn):
         
         row = cur.fetchone()
         print("From 1948 to 2017, the year with the least rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
-        
-=======
-        print(row)
 
-def dated_avg_temp_dates(conn):
-    print("this function lists out the date that corresponds to the average weather in Seattle which is maximum temperature at 70, and lowest at 40 .")
-    sql = """select distinct DATE, TMAX, TMIN, RAIN
-                from SeattleRainfall
-                WHERE RAIN = 'TRUE' AND
-                    TMAX >= '70' AND
-                    TMIN >= '40'
-                    order by DATE
-    """
-    cur = conn.cursor()
-    cur.execute(sql)
-        
-    row = cur.fetchone()
-    print(row)
-
-#     suppname = input("What suppier name do you want to find? ")
-#conn.execute("SELECT s_name, SUM(w_capacity), ps_availqty FROM supplier, warehouse, partsupp WHERE s_suppkey  = w_suppkey AND ps_suppkey = s_suppkey AND s_name = ?",[suppname])
-
-def dated_avg_custom(conn):
-    print("please specify a TMIN and TMAX to find dates within those temperature")
-    max = int(input("enter the highest temperature "))
-    min = int(input("enter the lowest temperature "))
-    sql = """
-    select distinct DATE, TMAX, TMIN, RAIN
-                from SeattleRainfall
-                WHERE RAIN = 'TRUE' AND
-                    TMAX >= ? AND
-                    TMIN >= ?
-                    order by DATE
-    """
-    cur = conn.cursor()
-    cur.execute(sql, (max, min))
-        
-    row = cur.fetchone()
-    print(row)
+def getMonthlyReport(con):
+    year = input("Enter a year: ")
     
->>>>>>> e0ad85b7ef9ab32ed94fe8aa9af71c79b8b1bdc6
+    sql = """ 
+    SELECT COUNT(RAIN), ROUND(AVG(PRCP), 3)
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
+    GROUP BY strftime('%m', DATE) """
+    
+    cur = con.cursor()
+    cur.execute(sql, (year,))
+    rainPrcp = cur.fetchall()
+    
+    sql = """ 
+    SELECT strftime('%m-%Y', DATE), ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
+    FROM SeattleRainfall
+    WHERE strftime('%Y', DATE) = ?
+    GROUP BY strftime('%m', DATE) """ 
+    
+    cur.execute(sql, (year,))
+    monthTemp = cur.fetchall()
+    
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] 
+    print("Monthly report for the year", year,":")
+    
+    for month, row, roww in zip(months, monthTemp, rainPrcp):
+        print(month, ":\n Average temperature (F):", row[1], "\n Number of rainy days:", roww[0], "\n Average precipitation (in inches):", roww[1])
+    
+def getDailyReport(con):
+    year = input("Enter a year: ")
+    month = input("Enter a month (Numerically): ")
+    date = year + "-" + month
+    
+    sql = """
+    SELECT *
+    FROM SeattleRainfall
+    WHERE strftime('%Y-%m', DATE) = ?
+    GROUP BY strftime('%d', DATE) """
+    
+    cur = con.cursor()
+    cur.execute(sql, (date,))
+    report = cur.fetchall()
+    
+    print("Daily report for", month + "-" + year)
+    
+    for row in report:
+        if row[4] == 'TRUE':
+            rain = 'Rained'
+        else:
+            rain = 'Did not rain'
+            
+        print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
+          
 def main():
     database = r"Data/database.sqlite"
 
@@ -242,7 +250,11 @@ def main():
 
         #getAnnualReport(conn)
         
-        getLeastOrMostRain(conn)
+        #getLeastOrMostRain(conn)
+        
+        #getMonthlyReport(conn)
+        
+        getDailyReport(conn)
         
         #deleteTables(conn)
 

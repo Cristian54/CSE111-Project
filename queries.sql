@@ -53,26 +53,32 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
 ) rainDays
 FROM SeattleRainfall
 WHERE strftime('%Y', DATE) = '1999'
-
---Query to get a monthly report
-INSERT INTO MonthlyReport (mr_monthYear, mr_avgPrcp, mr_avgTemp)
-SELECT strftime('%m-%Y', DATE), AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2 as temp
-/* (
-    SELECT COUNT(RAIN)
+--Modified the above query to get the avg precipitation from only rainy days since thats the days where there is precipitation
+SELECT AVG(PRCP), COUNT(RAIN), (
+    SELECT (AVG(TMAX)+AVG(TMIN))/2
     FROM SeattleRainfall
-    WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1948'
-    GROUP BY strftime('%m', DATE)
-) rainDays */
+    WHERE strftime('%Y', DATE) = '1999'
+) avgTemp
 FROM SeattleRainfall
-WHERE strftime('%Y', DATE) = '1948'
+WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1999'
+
+--Queries to get a monthly report
+SELECT strftime('%m-%Y', DATE), ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
+FROM SeattleRainfall
+WHERE strftime('%Y', DATE) = '1999'
+GROUP BY strftime('%m', DATE)
+
+SELECT COUNT(RAIN), ROUND(AVG(PRCP), 3)
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1999'
 GROUP BY strftime('%m', DATE)
 
 --Query to get a daily report from a specified month
 INSERT INTO DailyReport
 SELECT *
 FROM SeattleRainfall
-WHERE DATE >= "1996-01-01" AND DATE <= "1996-01-31"
-GROUP BY strftime('%d', DATE) 
+WHERE strftime('%Y-%m', DATE) = '1996-01'
+GROUP BY strftime('%d', DATE)
 
 --Query to get a ranged report (specified start and end dates)
 INSERT INTO RangedReport (rr_avgPrpc, rr_avgTemp, rr_numRainDays, rr_totalDays)
