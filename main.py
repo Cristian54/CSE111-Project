@@ -236,6 +236,51 @@ def getDailyReport(con):
             rain = 'Did not rain'
             
         print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
+
+
+def userInpDates(conn):
+    startY = input('starting year: ')
+    startM = input('starting month: ')
+    startD = input('starting day: ')
+    start = startY + '-' + startM + '-' + startD
+
+    endY = input('ending year: ')
+    endM = input('ending month: ')
+    endD = input('ending day: ')
+    end = endY + '-' + endM + '-' + endD
+    sql = """
+    SELECT *
+    FROM SeattleRainfall
+    WHERE DATE >= ? and
+    DATE <= ? """
+    
+    cur = conn.cursor()
+    cur.execute(sql, (start, end))
+    x = cur.fetchall()
+    
+    print("Data from " + start + " to " + end)
+    for row in x:
+        if row[4] == 'TRUE':
+            rain = 'Rained'
+        else:
+            rain = 'Did not rain'
+            
+        print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
+
+#num days rained and did not rain, not done yet
+def rainDays (conn):
+    sql = """ select count(rain1) as rained, count(rain2) as noRain
+        from (
+            select 
+            case when rain = 'TRUE' then rain end as rain1,
+            case when rain = 'FALSE' then rain end as rain2
+            from SeattleRainfall
+        ) as x
+    """
+    cur = conn.cursor()
+    cur.execute(sql)
+    x = cur.fetchall()
+    #printing goes here
           
 def main():
     database = r"Data/database.sqlite"
@@ -243,18 +288,25 @@ def main():
     conn = openConnection(database)
 
     with conn:
-        #dropTables(conn)
-        #createTables(conn)
+        dropTables(conn)
+        createTables(conn)
 
-        #populateSeattleRainfall(conn)
+        populateSeattleRainfall(conn)
 
-        #getAnnualReport(conn)
+        print("Options: \n1: get annual data of a specified year \n2: get the day with the most or least rain \n ")
+        functions = 0
+        functions = input("Choose what you would like to do: ")
         
-        #getLeastOrMostRain(conn)
-        
-        #getMonthlyReport(conn)
-        
-        getDailyReport(conn)
+        if functions == '1':
+            getAnnualReport(conn)
+        elif functions == '2':
+            getLeastOrMostRain(conn)
+        elif functions == '3':
+            getMonthlyReport(conn)
+        elif functions == '4':
+            getDailyReport(conn)
+        elif functions == '5':
+            userInpDates(conn)
         
         #deleteTables(conn)
 
