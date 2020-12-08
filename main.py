@@ -325,6 +325,23 @@ def rainDays(conn):
     for row in x:  
         print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[0], "days with rain in Seattle")
         print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[1], "days without rain in Seattle")
+
+def insertIntoSeattleRainfall(conn):
+    print("you are initiating an add to the database SeattleRainfall, please specify the following:")
+    dateInp = input("The date e.g.(2020-01-01): ")
+    rainInp = input("Rain percipitation e.g.(0.2): ")
+    maxInp = input("The day's highest temperature e.g.(50): ")
+    minInp = input("The day's lowest temperature e.g.(30): ")
+    boolInp = input("Did it rain- TRUE or FALSE e.g.(TRUE): ")
+
+    sql = """
+    insert into SeattleRainfall(DATE, PRCP, TMAX, TMIN, RAIN)
+    VALUES (?, ?, ?, ?, ?)
+    """
+    cur = conn.cursor()
+    cur.execute(sql, [dateInp, rainInp, maxInp, minInp, boolInp])
+    x = cur.fetchall()
+    print("The info you are adding: ", dateInp, "|", rainInp, "|", maxInp, "|", minInp, "|", boolInp)
           
 def main():
     database = r"Data/database.sqlite"
@@ -338,7 +355,6 @@ def main():
         #populateSeattleRainfall(conn)
         
         #deleteTables(conn)
-        
         functions = 1
         while functions != '0':
             print("""\nOptions: 
@@ -349,6 +365,7 @@ def main():
             \n4: Get a ranged report (user specifies start and end dates)
             \n5: Get the single year with the most/least rain, or list a specified number of years with the most/least rain
             \n6: From our database check how many of the days rained and how many did not rain
+            \n7: Inserting new weather data into the database
             \n""")
             #print other functions - explanation of what they do
             functions = input("\nChoose what you would like to do: ")
@@ -365,11 +382,12 @@ def main():
                 getLeastOrMostRain(conn)
             elif functions == '6':
                 rainDays(conn)
+            elif functions == '7':
+                insertIntoSeattleRainfall(conn)
             #add other function switch cases
             elif functions == '0':
                 print("The program is now closing")
                 closeConnection(conn, database)
-
 
 if __name__ == '__main__':
     main()
