@@ -309,39 +309,8 @@ def getLeastOrMostRain(conn):
             print("These are the top", length, "years with the least rain: ")
             for year in yearList:
                 print(year[0] + ":", year[1], "rainy days")
-        
 
-def userInpDates(conn):
-    startY = input('starting year: ')
-    startM = input('starting month: ')
-    startD = input('starting day: ')
-    start = startY + '-' + startM + '-' + startD
-
-    endY = input('ending year: ')
-    endM = input('ending month: ')
-    endD = input('ending day: ')
-    end = endY + '-' + endM + '-' + endD
-    sql = """
-    SELECT *
-    FROM SeattleRainfall
-    WHERE DATE >= ? and
-    DATE <= ? """
-    
-    cur = conn.cursor()
-    cur.execute(sql, (start, end))
-    x = cur.fetchall()
-    
-    print("Data from " + start + " to " + end)
-    for row in x:
-        if row[4] == 'TRUE':
-            rain = 'Rained'
-        else:
-            rain = 'Did not rain'
-            
-        print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
-
-#num days rained and did not rain, not done yet
-def rainDays (conn):
+def rainDays(conn):
     sql = """ select count(rain1) as rained, count(rain2) as noRain
         from (
             select 
@@ -353,7 +322,9 @@ def rainDays (conn):
     cur = conn.cursor()
     cur.execute(sql)
     x = cur.fetchall()
-    #printing goes here
+    for row in x:  
+        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[0], "days with rain in Seattle")
+        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[1], "days without rain in Seattle")
           
 def main():
     database = r"Data/database.sqlite"
@@ -361,41 +332,44 @@ def main():
     conn = openConnection(database)
 
     with conn:
-        dropTables(conn)
-        createTables(conn)
+        #dropTables(conn)
+        #createTables(conn)
 
-        populateSeattleRainfall(conn)
-
-<<<<<<< HEAD
-        #getAnnualReport(conn)
-        
-        getLeastOrMostRain(conn)
-        
-        #getMonthlyReport(conn)
-        
-        #getDailyReport(conn)
-        
-        #getRangedReport(conn)
-=======
-        print("Options: \n1: get annual data of a specified year \n2: get the day with the most or least rain \n ")
-        functions = 0
-        functions = input("Choose what you would like to do: ")
-        
-        if functions == '1':
-            getAnnualReport(conn)
-        elif functions == '2':
-            getLeastOrMostRain(conn)
-        elif functions == '3':
-            getMonthlyReport(conn)
-        elif functions == '4':
-            getDailyReport(conn)
-        elif functions == '5':
-            userInpDates(conn)
->>>>>>> daeea5ed50121eb1a1fe1d0195f7dfe0519dd45c
+        #populateSeattleRainfall(conn)
         
         #deleteTables(conn)
+        
+        functions = 1
+        while functions != '0':
+            print("""\nOptions: 
+            \n0: Close the program
+            \n1: Get an annual report of a specified year
+            \n2: Get a monthly report (annual report broken into months) of a specified year
+            \n3: Get a daily report of a given month
+            \n4: Get a ranged report (user specifies start and end dates)
+            \n5: Get the single year with the most/least rain, or list a specified number of years with the most/least rain
+            \n6: From our database check how many of the days rained and how many did not rain
+            \n""")
+            #print other functions - explanation of what they do
+            functions = input("\nChoose what you would like to do: ")
+            
+            if functions == '1':
+                getAnnualReport(conn)
+            elif functions == '2':
+                getMonthlyReport(conn)
+            elif functions == '3':
+                getDailyReport(conn)
+            elif functions == '4':
+                getRangedReport(conn)
+            elif functions == '5':
+                getLeastOrMostRain(conn)
+            elif functions == '6':
+                rainDays(conn)
+            #add other function switch cases
+            elif functions == '0':
+                print("The program is now closing")
+                closeConnection(conn, database)
 
-    closeConnection(conn, database)
 
 if __name__ == '__main__':
     main()
