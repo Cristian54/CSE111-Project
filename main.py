@@ -311,13 +311,14 @@ def getLeastOrMostRain(conn):
                 print(year[0] + ":", year[1], "rainy days")
 
 def rainDays(conn):
-    sql = """ select count(rain1) as rained, count(rain2) as noRain
-        from (
-            select 
-            case when rain = 'TRUE' then rain end as rain1,
-            case when rain = 'FALSE' then rain end as rain2
-            from SeattleRainfall
-        ) as x
+    sql = """ 
+    SELECT COUNT(*) as Rained, (
+        SELECT COUNT(*)
+        FROM SeattleRainfall
+        WHERE RAIN = 'FALSE'
+    ) NoRain
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE'
     """
     cur = conn.cursor()
     cur.execute(sql)
