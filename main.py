@@ -323,27 +323,27 @@ def rainDays(conn):
     cur = conn.cursor()
     cur.execute(sql)
     rain = cur.fetchone()
-      
+
     print("\nFrom 1948-01-01 to 2017-12-14, or 25,548 recorded days, Seattle had", rain[0], "days with rain and", rain[1], "days without rain.\n")
 
 def getDayInAllYears(con):
     day = input("\nEnter a day (MM-DD): ")
-    
+
     sql = """
     SELECT * 
     FROM SeattleRainfall
     WHERE strftime('%m-%d', DATE) = ? """
-    
+
     cur = con.cursor()
     cur.execute(sql, (day,))
     days = cur.fetchall()
-    
+
     for day in days:
         if day[4] == 'TRUE':
             rain = 'Rained'
         else:
             rain = 'Did not rain'
-            
+
         print("Date:", day[0], "| Precipitation:", day[1], "| Max temperature (F):", day[2], "| Min temperature (F):", day[3], "|", rain)
 
 def getColdestHottestDays(con):
@@ -442,7 +442,22 @@ def getColdestHottestDays(con):
                 else:
                     rain = 'Did not rain'
                 print("Date:", day[0], "| Temperature (F):", day[1], "|", rain)
-        
+
+def insertIntoSeattleRainfall(conn):
+    date = input("Enter the date (YYYY-MM-DD): ")
+    prcp = input("Enter the precipitation: ")
+    maxTemp = input("Enter the day's highest temperature (F): ")
+    minTemp = input("Enter the day's lowest temperature (F): ")
+    rain = input("Did it rain? (TRUE/FALSE): ")
+    
+    sql = """
+    insert into SeattleRainfall(DATE, PRCP, TMAX, TMIN, RAIN)
+    VALUES (?, ?, ?, ?, ?)
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (date, prcp, maxTemp, minTemp, rain,))
+    conn.commit()
+           
 def main():
     database = r"Data/database.sqlite"
 
@@ -455,9 +470,6 @@ def main():
         #populateSeattleRainfall(conn)
         
         #deleteTables(conn)
-        
-        print("This program allows you to view rainfall statistics from the city of Seattle, WA. There is information dating back to 1948 all the way up to 2017. \n") 
-        
         functions = 1
         while functions != '0':
             print("-------------------------------------------------------------------")
@@ -470,10 +482,11 @@ def main():
                        "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
                        "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
                        "(7) Get the information from a specific day from every year available",
-                       "(8) List the hottest or coldest days from the database, amount specificed by user"]
+                       "(8) List the hottest or coldest days from the database, amount specificed by user",
+                       "(9) Insert data into the database, e.g. a day prior to 1948 or after 2017"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -493,13 +506,12 @@ def main():
                 getDayInAllYears(conn)
             elif functions == '8':
                 getColdestHottestDays(conn)
+            elif functions == '9':
+                insertIntoSeattleRainfall(conn)
             #add other function switch cases
             elif functions == '0':
                 print("The program is now closing")
-        
-        
-    closeConnection(conn, database)
-
+                closeConnection(conn, database)
 
 if __name__ == '__main__':
     main()
