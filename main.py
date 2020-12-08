@@ -311,20 +311,40 @@ def getLeastOrMostRain(conn):
                 print(year[0] + ":", year[1], "rainy days")
 
 def rainDays(conn):
-    sql = """ select count(rain1) as rained, count(rain2) as noRain
-        from (
-            select 
-            case when rain = 'TRUE' then rain end as rain1,
-            case when rain = 'FALSE' then rain end as rain2
-            from SeattleRainfall
-        ) as x
+    sql = """ 
+    SELECT COUNT(*) as Rained, (
+        SELECT COUNT(*)
+        FROM SeattleRainfall
+        WHERE RAIN = 'FALSE'
+    ) NoRain
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE'
     """
     cur = conn.cursor()
     cur.execute(sql)
-    x = cur.fetchall()
-    for row in x:  
-        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[0], "days with rain in Seattle")
-        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[1], "days without rain in Seattle")
+    rain = cur.fetchone()
+      
+    print("\nFrom 1948-01-01 to 2017-12-14, or 25,548 recorded days, Seattle had", rain[0], "days with rain and", rain[1], "days without rain.\n")
+
+def getDayInAllYears(con):
+    day = input("\nEnter a day (MM-DD): ")
+    
+    sql = """
+    SELECT * 
+    FROM SeattleRainfall
+    WHERE strftime('%m-%d', DATE) = ? """
+    
+    cur = con.cursor()
+    cur.execute(sql, (day,))
+    days = cur.fetchall()
+    
+    for day in days:
+        if day[4] == 'TRUE':
+            rain = 'Rained'
+        else:
+            rain = 'Did not rain'
+            
+        print("Date:", day[0], "| Precipitation:", day[1], "| Max temperature (F):", day[2], "| Min temperature (F):", day[3], "|", rain)
           
 def main():
     database = r"Data/database.sqlite"
@@ -339,11 +359,11 @@ def main():
         
         #deleteTables(conn)
         
-        print("This program allows you to view rainfall statistics from the city of Seattle, WA. We have information dating back to 1948 all the way up to 2017.") 
-        print()
+        print("This program allows you to view rainfall statistics from the city of Seattle, WA. There is information dating back to 1948 all the way up to 2017. \n") 
         
         functions = 1
         while functions != '0':
+            print("-------------------------------------------------------------------")
             print("Below are the available options, each numbered to specify which option you want to choose: \n")
             
             options = ["(1) Annual Report: Get average data from a specified year", 
@@ -351,10 +371,11 @@ def main():
                        "(3) Daily Report: Get the data from every day in a specified month", 
                        "(4) Ranged Report: Get average data from specified start and end dates",
                        "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
-                       "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017"]
+                       "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
+                       "(7) Get the information from a specific day from every year available"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -370,6 +391,8 @@ def main():
                 getLeastOrMostRain(conn)
             elif functions == '6':
                 rainDays(conn)
+            elif functions == '7':
+                getDayInAllYears(conn)
             #add other function switch cases
             elif functions == '0':
                 print("The program is now closing")

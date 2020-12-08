@@ -180,6 +180,14 @@ from (
     from SeattleRainfall
 ) as x
 
+SELECT COUNT(*) as Rained, (
+    SELECT COUNT(*)
+    FROM SeattleRainfall
+    WHERE RAIN = 'FALSE'
+) NoRain
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE'
+
 --insert query adding data into SeattleRainfall
 INSERT INTO SeattleRainfall (DATE, PRCP, TMAX, TMIN, RAIN) 
 VALUES ('2020-11-11', '0', '46', '40', 'FALSE')
