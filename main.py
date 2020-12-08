@@ -470,6 +470,9 @@ def main():
         #populateSeattleRainfall(conn)
         
         #deleteTables(conn)
+        
+        print("This program allows you to view rainfall statistics from the city of Seattle, WA. There is information dating back to 1948 all the way up to 2017. \n")
+         
         functions = 1
         while functions != '0':
             print("-------------------------------------------------------------------")
