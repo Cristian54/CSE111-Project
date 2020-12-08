@@ -339,18 +339,23 @@ def main():
         
         #deleteTables(conn)
         
+        print("This program allows you to view rainfall statistics from the city of Seattle, WA. We have information dating back to 1948 all the way up to 2017.") 
+        print()
+        
         functions = 1
         while functions != '0':
-            print("""\nOptions: 
-            \n0: Close the program
-            \n1: Get an annual report of a specified year
-            \n2: Get a monthly report (annual report broken into months) of a specified year
-            \n3: Get a daily report of a given month
-            \n4: Get a ranged report (user specifies start and end dates)
-            \n5: Get the single year with the most/least rain, or list a specified number of years with the most/least rain
-            \n6: From our database check how many of the days rained and how many did not rain
-            \n""")
-            #print other functions - explanation of what they do
+            print("Below are the available options, each numbered to specify which option you want to choose: \n")
+            
+            options = ["(1) Annual Report: Get average data from a specified year", 
+                       "(2) Monthly Report: Get an annual report broken down into months",
+                       "(3) Daily Report: Get the data from every day in a specified month", 
+                       "(4) Ranged Report: Get average data from specified start and end dates",
+                       "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
+                       "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017"]
+            
+            print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
+            print("Other options: \n ", options[4], "\n ", options[5])
+          
             functions = input("\nChoose what you would like to do: ")
             
             if functions == '1':
@@ -368,7 +373,9 @@ def main():
             #add other function switch cases
             elif functions == '0':
                 print("The program is now closing")
-                closeConnection(conn, database)
+        
+        
+    closeConnection(conn, database)
 
 
 if __name__ == '__main__':
