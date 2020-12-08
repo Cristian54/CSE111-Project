@@ -456,6 +456,25 @@ def insertIntoSeattleRainfall(conn):
     cur = conn.cursor()
     cur.execute(sql, (date, prcp, maxTemp, minTemp, rain,))
     conn.commit()
+
+def modifySeattleRainfall(conn):
+    currDate = input("Enter the day you are modifying (YYYY-MM-DD): ")
+    newPrcp = input("Enter the day's precipitation: ")
+    newMaxTemp = input("Enter the day's highest temperature (F): ")
+    newMinTemp = input("Enter the day's lowest temperature (F): ")
+    newRain = input("Did it rain? (TRUE/FALSE): ")
+    sql = """
+    update SeattleRainfall
+    set PRCP = ?,
+        TMAX = ?,
+        TMIN = ?,
+        RAIN = ?
+    where DATE = ?
+    """
+
+    cur = conn.cursor()
+    cur.execute(sql, (newPrcp, newMaxTemp, newMinTemp, newRain, currDate,))
+    conn.commit()
            
 def main():
     database = r"Data/database.sqlite"
@@ -485,10 +504,11 @@ def main():
                        "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
                        "(7) Get the information from a specific day from every year available",
                        "(8) List the hottest or coldest days from the database, amount specificed by user",
-                       "(9) Insert data into the database, e.g. a day prior to 1948 or after 2017"]
+                       "(9) Insert data into the database, e.g. a day prior to 1948 or after 2017",
+                       "(10) Modify a specific day's data in the database"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8], "\n ", options[9])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -510,7 +530,8 @@ def main():
                 getColdestHottestDays(conn)
             elif functions == '9':
                 insertIntoSeattleRainfall(conn)
-            #add other function switch cases
+            elif functions == '10':
+                modifySeattleRainfall(conn)
             elif functions == '0':
                 print("The program is now closing")
                 closeConnection(conn, database)
