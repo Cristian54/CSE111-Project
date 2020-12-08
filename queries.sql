@@ -123,7 +123,7 @@ LIMIT 1
 
 --List the coldest day(s), optionally only looking at rainy days or days without rain. 
 --Can also add another condition to find the coldest day with the least/highest amount of precipitation 
-SELECT DATE, MIN(TMIN)
+SELECT DATE, MIN(TMIN), RAIN
 FROM SeattleRainfall
 --WHERE RAIN = 'FALSE'  
 GROUP BY strftime('%d', DATE) 
@@ -131,7 +131,7 @@ ORDER BY MIN(TMIN) ASC
 LIMIT 10
 
 --List the hottest day(s)
-SELECT DATE, MAX(TMAX)
+SELECT DATE, MAX(TMAX), RAIN
 FROM SeattleRainfall
 --WHERE RAIN = 'FALSE'
 GROUP BY strftime('%d', DATE) 

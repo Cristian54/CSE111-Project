@@ -345,7 +345,104 @@ def getDayInAllYears(con):
             rain = 'Did not rain'
             
         print("Date:", day[0], "| Precipitation:", day[1], "| Max temperature (F):", day[2], "| Min temperature (F):", day[3], "|", rain)
-          
+
+def getColdestHottestDays(con):
+    choice = input("\nDo you want to list the hottest or coldest days? (H/C): ")
+    
+    cur = con.cursor()
+    if choice == 'H':
+        length = input("\nHow many days do you want to list? ")
+        rain = input("\nDo you want to list the hottest days where it rained? (Y/N): ")
+        
+        if rain == 'N': 
+            sql = """ 
+            SELECT DATE, MAX(TMAX)
+            FROM SeattleRainfall
+            WHERE RAIN = 'FALSE'
+            GROUP BY strftime('%d', DATE) 
+            ORDER BY MAX(TMAX) DESC
+            LIMIT ? """
+            
+            cur.execute(sql, (length,))
+            days = cur.fetchall()
+            
+            print("\nThe", length, "hottest days, from 1948 to 2017, in Seattle were:")
+            for day in days:
+                print("Date:", day[0], "| Temperature (F):", day[1])
+                
+        elif rain == 'Y':
+            sql = """ 
+            SELECT DATE, MAX(TMAX)
+            FROM SeattleRainfall
+            WHERE RAIN = 'TRUE'
+            GROUP BY strftime('%d', DATE) 
+            ORDER BY MAX(TMAX) DESC
+            LIMIT ? """
+            
+            cur.execute(sql, (length,))
+            days = cur.fetchall()
+            
+            print("\nThe", length, "hottest rainy days, from 1948 to 2017, in Seattle were:")
+            for day in days:
+                print("Date:", day[0], "| Temperature (F):", day[1]) 
+        
+    elif choice == 'C':
+        length = input("\nHow many days do you want to list? ")
+        rain = input("\nDo you want to list the coldest days with/without rain, or both? (R/NR/B): ")
+        rain.upper()
+        
+        if rain == 'R':
+            sql = """
+            SELECT DATE, MIN(TMIN)
+            FROM SeattleRainfall
+            WHERE RAIN = 'TRUE'  
+            GROUP BY strftime('%d', DATE) 
+            ORDER BY MIN(TMIN) ASC
+            LIMIT ? """
+            
+            cur.execute(sql, (length,))
+            days = cur.fetchall()
+            
+            print("\nThe", length, "coldest rainy days, from 1948 to 2017, in Seattle were:")
+            for day in days:
+                print("Date:", day[0], "| Temperature (F):", day[1]) 
+        
+        elif rain == 'NR':
+            sql = """
+            SELECT DATE, MIN(TMIN)
+            FROM SeattleRainfall
+            WHERE RAIN = 'FALSE'  
+            GROUP BY strftime('%d', DATE) 
+            ORDER BY MIN(TMIN) ASC
+            LIMIT ? """
+            
+            cur.execute(sql, (length,))
+            days = cur.fetchall()
+            
+            print("\nThe", length, "coldest days, from 1948 to 2017, without rain in Seattle were:")
+            for day in days:
+                print("Date:", day[0], "| Temperature (F):", day[1])
+        
+        elif rain == 'B':
+            sql = """
+            SELECT DATE, MIN(TMIN), RAIN
+            FROM SeattleRainfall
+            WHERE RAIN = 'FALSE'  
+            GROUP BY strftime('%d', DATE) 
+            ORDER BY MIN(TMIN) ASC
+            LIMIT ? """
+            
+            cur.execute(sql, (length,))
+            days = cur.fetchall()
+            
+            print("\nThe", length, "coldest days from 1948 to 2017 in Seattle were:")
+            for day in days:
+                if day[4] == 'TRUE':
+                    rain = 'Rained'
+                else:
+                    rain = 'Did not rain'
+                print("Date:", day[0], "| Temperature (F):", day[1], "|", rain)
+        
 def main():
     database = r"Data/database.sqlite"
 
@@ -372,10 +469,11 @@ def main():
                        "(4) Ranged Report: Get average data from specified start and end dates",
                        "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
                        "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
-                       "(7) Get the information from a specific day from every year available"]
+                       "(7) Get the information from a specific day from every year available",
+                       "(8) List the hottest or coldest days from the database, amount specificed by user"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -393,6 +491,8 @@ def main():
                 rainDays(conn)
             elif functions == '7':
                 getDayInAllYears(conn)
+            elif functions == '8':
+                getColdestHottestDays(conn)
             #add other function switch cases
             elif functions == '0':
                 print("The program is now closing")
