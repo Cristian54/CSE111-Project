@@ -267,8 +267,7 @@ def userInpDates(conn):
             
         print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
 
-#num days rained and did not rain, not done yet
-def rainDays (conn):
+def rainDays(conn):
     sql = """ select count(rain1) as rained, count(rain2) as noRain
         from (
             select 
@@ -280,7 +279,9 @@ def rainDays (conn):
     cur = conn.cursor()
     cur.execute(sql)
     x = cur.fetchall()
-    #printing goes here
+    for row in x:  
+        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[0], "days with rain in Seattle")
+        print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[1], "days without rain in Seattle")
           
 def main():
     database = r"Data/database.sqlite"
@@ -293,24 +294,38 @@ def main():
 
         populateSeattleRainfall(conn)
 
-        print("Options: \n1: get annual data of a specified year \n2: get the day with the most or least rain \n ")
-        functions = 0
-        functions = input("Choose what you would like to do: ")
-        
-        if functions == '1':
-            getAnnualReport(conn)
-        elif functions == '2':
-            getLeastOrMostRain(conn)
-        elif functions == '3':
-            getMonthlyReport(conn)
-        elif functions == '4':
-            getDailyReport(conn)
-        elif functions == '5':
-            userInpDates(conn)
-        
-        #deleteTables(conn)
+        functions = 1
+        while functions != '0':
+            print("""\nOptions: 
+            \n0: Closing the program
+            \n1: Get annual data of a specified year
+            \n2: Get the day with the most or least rain
+            \n3: Get a monthly report based on a given year and month
+            \n4: Get a daily report based on inputted year and month
+            \n5: Get data on the weather based on inputted range (year-month-day)
+            \n6: From our database check how many of the days rained and how many did not rain
+            \n""")
+            #print other functions - explanation of what they do
+            functions = input("\nChoose what you would like to do: ")
+            
+            if functions == '1':
+                getAnnualReport(conn)
+            elif functions == '2':
+                getLeastOrMostRain(conn)
+            elif functions == '3':
+                getMonthlyReport(conn)
+            elif functions == '4':
+                getDailyReport(conn)
+            elif functions == '5':
+                userInpDates(conn)
+            elif functions == '6':
+                rainDays(conn)
+            #add other function switch cases
+            elif functions == '0':
+                print("The program is now closing")
+                closeConnection(conn, database)
+            
 
-    closeConnection(conn, database)
 
 if __name__ == '__main__':
     main()
