@@ -90,6 +90,14 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
 FROM SeattleRainfall
 WHERE DATE >= "1980-10-13" AND DATE <= "1985-03-25"
 
+SELECT COUNT(RAIN), ROUND(AVG(PRCP), 3)
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE' AND (DATE >= "1980-10-13" AND DATE <= "1985-03-25")
+
+SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 3), COUNT(DATE)
+FROM SeattleRainfall
+WHERE DATE >= "1980-10-13" AND DATE <= "1985-03-25"
+
 
 --Query to only get the number of rainy days from a week, month, year or any other period of time
 SELECT COUNT(RAIN)

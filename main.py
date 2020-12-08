@@ -29,7 +29,7 @@ def closeConnection(_conn, _dbFile):
     print("++++++++++++++++++++++++++++++++++")
 
 def dropTables(con):
-    con.execute("DROP TABLE IF EXISTS SeattleRainfall")
+    #con.execute("DROP TABLE IF EXISTS SeattleRainfall")
     con.execute("DROP TABLE IF EXISTS AnnualReport")
     con.execute("DROP TABLE IF EXISTS MonthlyReport")
     con.execute("DROP TABLE IF EXISTS DailyReport")
@@ -86,6 +86,8 @@ def createTables(con):
                 rr_endDate  DATE NOT NULL, 
                 rr_avgPrcp  REAL NOT NULL, 
                 rr_avgTemp  REAL NOT NULL,
+                rr_maxTemp  REAL NOT NULL,
+                rr_minTemp  REAL NOT NULL,
                 rr_numRainDays  INT NOT NULL,
                 rr_totalDays    INT NOT NULL
             ) """ 
@@ -149,40 +151,6 @@ def getAnnualReport(con):
     con.commit()
     
     print("Annual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
-    
-def getLeastOrMostRain(conn):
-    print("Do you want to get the year with the most or least rain? (M/L)")
-    choice = input()
-    
-    if choice == 'M':
-        sql = """ 
-            SELECT strftime('%Y', DATE), COUNT(RAIN)
-            FROM SeattleRainfall
-            WHERE RAIN = 'TRUE'
-            GROUP BY strftime('%Y', DATE)
-            ORDER BY COUNT(RAIN) DESC
-            LIMIT 1 """
-            
-        cur = conn.cursor()
-        cur.execute(sql)
-        
-        row = cur.fetchone()
-        print("From 1948 to 2017, the year with the most rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
-        
-    elif choice == 'L':
-        sql = """ 
-            SELECT strftime('%Y', DATE), COUNT(RAIN)
-            FROM SeattleRainfall
-            WHERE RAIN = 'TRUE'
-            GROUP BY strftime('%Y', DATE)
-            ORDER BY COUNT(RAIN) ASC
-            LIMIT 1 """
-            
-        cur = conn.cursor()
-        cur.execute(sql)
-        
-        row = cur.fetchone()
-        print("From 1948 to 2017, the year with the least rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
 
 def getMonthlyReport(con):
     year = input("Enter a year: ")
@@ -236,7 +204,112 @@ def getDailyReport(con):
             rain = 'Did not rain'
             
         print(row[0], "\n", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
-          
+
+def getRangedReport(con):
+    startDate = input("Enter a starting date (YYYY-MM-DD): ") 
+    endDate = input("Enter an end date (YYYY-MM-DD): ")
+    
+    sql = """ 
+    SELECT COUNT(RAIN), ROUND(AVG(PRCP), 3)
+    FROM SeattleRainfall
+    WHERE RAIN = 'TRUE' AND (DATE >= ? AND DATE <= ?) """
+    
+    cur = con.cursor()
+    cur.execute(sql, (startDate, endDate,))
+    rainPrcp = cur.fetchone()
+    
+    sql = """
+    SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 3), COUNT(DATE), MAX(TMAX), MIN(TMIN)
+    FROM SeattleRainfall
+    WHERE DATE >= ? AND DATE <= ? """
+    
+    cur.execute(sql, (startDate, endDate,))
+    tempDays = cur.fetchone()
+    
+    print()
+    print("Report starting from", startDate, "and ending on", endDate, ": \n Average Precipitation (in inches):", 
+          rainPrcp[1], "\n Average temperature (F):", tempDays[0], "\n Highest/Lowest temperature (F):", tempDays[2], "/", tempDays[3], "\n Number of rainy days:", rainPrcp[0], "\n Total number of days:", tempDays[1])
+
+def getLeastOrMostRain(conn):
+    choice = input("Do you want to list the years with the most/least rain, or get top single year? (list/single): ")
+    print()
+    
+    cur = conn.cursor()
+    
+    if choice == "single":
+        choice = input("Do you want to get the year with the most or least rain? (M/L): ")
+        print()
+        
+        if choice == 'M':
+            sql = """ 
+                SELECT strftime('%Y', DATE), COUNT(RAIN)
+                FROM SeattleRainfall
+                WHERE RAIN = 'TRUE'
+                GROUP BY strftime('%Y', DATE)
+                ORDER BY COUNT(RAIN) DESC
+                LIMIT 1 """
+
+            cur.execute(sql)
+            row = cur.fetchone()
+            
+            print("From 1948 to 2017, the year with the most rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
+
+        elif choice == 'L':
+            sql = """ 
+                SELECT strftime('%Y', DATE), COUNT(RAIN)
+                FROM SeattleRainfall
+                WHERE RAIN = 'TRUE'
+                GROUP BY strftime('%Y', DATE)
+                ORDER BY COUNT(RAIN) ASC
+                LIMIT 1 """
+
+            cur.execute(sql)
+            row = cur.fetchone()
+            
+            print("From 1948 to 2017, the year with the least rain in Seattle was", row[0], "with a total of", row[1], "rainy days.")
+            
+    elif choice == "list":
+        choice = input("Do you want to list the years with the most or least rain? (M/L): ")
+        print()
+        
+        if choice == "M":
+            length = input("How many years do you want to list? (Total of 69 years available): ")
+            print()
+
+            sql = """ 
+                SELECT strftime('%Y', DATE), COUNT(RAIN)
+                FROM SeattleRainfall
+                WHERE RAIN = 'TRUE'
+                GROUP BY strftime('%Y', DATE)
+                ORDER BY COUNT(RAIN) DESC
+                LIMIT ? """
+
+            cur.execute(sql, (length,))
+            yearList = cur.fetchall()
+
+            print("These are the top", length, "years with the most rain:")
+            for year in yearList:
+                print(year[0] + ":", year[1], "rainy days")
+        
+        elif choice == "L":
+            length = input("How many years do you want to list? (Total of 69 years available): ")
+            print()
+
+            sql = """ 
+                SELECT strftime('%Y', DATE), COUNT(RAIN)
+                FROM SeattleRainfall
+                WHERE RAIN = 'TRUE'
+                GROUP BY strftime('%Y', DATE)
+                ORDER BY COUNT(RAIN) ASC
+                LIMIT ? """
+
+            cur.execute(sql, (length,))
+            yearList = cur.fetchall()
+
+            print("These are the top", length, "years with the least rain: ")
+            for year in yearList:
+                print(year[0] + ":", year[1], "rainy days")
+        
 def main():
     database = r"Data/database.sqlite"
 
@@ -250,11 +323,13 @@ def main():
 
         #getAnnualReport(conn)
         
-        #getLeastOrMostRain(conn)
+        getLeastOrMostRain(conn)
         
         #getMonthlyReport(conn)
         
-        getDailyReport(conn)
+        #getDailyReport(conn)
+        
+        #getRangedReport(conn)
         
         #deleteTables(conn)
 
