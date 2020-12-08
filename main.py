@@ -326,7 +326,7 @@ def rainDays(conn):
     for row in x:  
         print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[0], "days with rain in Seattle")
         print("From 1948-01-01 to 2017-12-14 or 25,548 recorded days there are", row[1], "days without rain in Seattle")
-
+ 
 def insertIntoSeattleRainfall(conn):
     print("you are initiating an add to the database SeattleRainfall, please specify the following:")
     dateInp = input("The date e.g.(2020-01-01): ")
