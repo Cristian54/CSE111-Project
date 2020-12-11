@@ -457,7 +457,7 @@ def insertIntoSeattleRainfall(conn):
     cur.execute(sql, (date, prcp, maxTemp, minTemp, rain,))
     conn.commit()
 
-def modifySeattleRainfall(conn):
+def updateSeattleRainfall(conn):
     currDate = input("Enter the day you are modifying (YYYY-MM-DD): ")
     newPrcp = input("Enter the day's precipitation: ")
     newMaxTemp = input("Enter the day's highest temperature (F): ")
@@ -471,9 +471,18 @@ def modifySeattleRainfall(conn):
         RAIN = ?
     where DATE = ?
     """
-
     cur = conn.cursor()
     cur.execute(sql, (newPrcp, newMaxTemp, newMinTemp, newRain, currDate,))
+    conn.commit()
+
+def deleteSeattleRainfall(conn):
+    usrDate = input("Input the date for which you would like the data to be deleted from the database (YYYY-MM-DD): ")
+    sql = """
+    delete from SeattleRainfall
+    where DATE = ?
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (usrDate))
     conn.commit()
            
 def main():
@@ -500,15 +509,16 @@ def main():
                        "(2) Monthly Report: Get an annual report broken down into months",
                        "(3) Daily Report: Get the data from every day in a specified month", 
                        "(4) Ranged Report: Get average data from specified start and end dates",
-                       "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
+                       "(5) Get the year with the most or least rain, or list a specified amount of years by most/least rain", 
                        "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
                        "(7) Get the information from a specific day from every year available",
                        "(8) List the hottest or coldest days from the database, amount specificed by user",
                        "(9) Insert data into the database, e.g. a day prior to 1948 or after 2017",
-                       "(10) Modify a specific day's data in the database"]
+                       "(10) Update a specific day's data in the database,",
+                       "(11) Delete a specific day's data from the database"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8], "\n ", options[9])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8], "\n ", options[9], "\n ", options[10])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -531,7 +541,9 @@ def main():
             elif functions == '9':
                 insertIntoSeattleRainfall(conn)
             elif functions == '10':
-                modifySeattleRainfall(conn)
+                updateSeattleRainfall(conn)
+            elif functions == '11':
+                deleteSeattleRainfall(conn)
             elif functions == '0':
                 print("The program is now closing")
                 closeConnection(conn, database)
