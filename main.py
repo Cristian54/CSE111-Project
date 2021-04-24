@@ -180,9 +180,9 @@ def getMonthlyReport(con):
     for month, row, roww in zip(months, monthTemp, rainPrcp):
         print(month, ":\n  Average temperature (F):", row[1], "\n  Number of rainy days:", roww[0], "\n  Average precipitation (in inches):", roww[1], "\n")
     
-def getDailyReport(con):
-    year = input("\nEnter a year: ")
-    month = input("Enter a month (01-12): ")
+def getDailyReport(con, year, month):
+    #year = input("\nEnter a year: ")
+    #month = input("Enter a month (01-12): ")
     date = year + "-" + month
     
     sql = """
@@ -194,6 +194,8 @@ def getDailyReport(con):
     cur = con.cursor()
     cur.execute(sql, (date,))
     report = cur.fetchall()
+    
+    return report
     
     print("\nDaily report for", month + "-" + year, ":\n")
     

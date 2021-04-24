@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+   <body>
+   
+      <table style="width:500px; border: 1px solid black"> 
+         <thead>
+            <td>Date</td>
+            <td>Precipitation</td>
+            <td>Lowest Temperature</td>
+            <td>Rained</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["date"]}}</td>
+               <td>{{row["prcp"]}}</td>
+               <td> {{ row["lowTemp"]}}</td>
+               <td>{{row['rain']}}</td>	
+            </tr>
+         {% endfor %}
+      </table>
+      
+      <a href = "/">Go back to home page</a>
+      
+   </body>
+</html>
