@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+
+    <div class="jumbotron">
+        <div class="container">
+          <h4 class="display-5">Daily report for {{yearMonth}}</h4>
+        </div>
+    </div>
+
+    <table style="width:100%">
+      <tr>
+        <th>Date</th>
+        <th>Precipitation</th>
+        <th>Max Temperature (F)</th>
+        <th>Min Temperature (F)</th>
+        <th>Rained</th>
+      </tr>
+
+      {% for day in dailyReport %}
+      <tr>
+          <td>{{ day.DATE }}</td>
+          <td>{{ day.PRCP }}</td>
+          <td> {{ day.TMAX }}</td>
+          <td>{{ day.TMIN }}</td>
+          <td>{{ day.RAIN }}</td>
+      </tr>
+      {% endfor %}
+
+    </table>
+</div> 
+      
+<a href = "/">Go back to home page</a>
+
+{% endblock %}
+ 

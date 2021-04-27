@@ -147,8 +147,8 @@ def getAnnualReport(con):
     cur.execute(sql, (year, year,)) 
     report = cur.fetchone()
     
-    cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[2], report[1],))
-    con.commit()
+    #cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[2], report[1],))
+    #con.commit()
     
     print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
 

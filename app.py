@@ -24,23 +24,19 @@ class Rain(db.Model):
 def home_page():
     days = Rain.query.count()
     #hotDays = Rain.query.filter_by(TMAX = 98).all()
-    #oneMonth = Rain.query.filter(Rain.DATE.startswith('1948-01')).all()
-    
-    #for day in oneMonth:
-        #print("Date: ", day.DATE, "Max Temp: ", day.TMAX)
          
     return render_template('home.html', days = days)
 
 
-@app.route('/monthlyReport', methods = ['POST', 'GET'])
+@app.route('/dailyReport', methods = ['POST', 'GET'])
 def monthlyReport():
     if request.method == 'GET':
-        return f"The URL /data is accessed directly. Try going to '/' to submit form"
+        return f"The URL /dailyReport is accessed directly. Try going to '/' to submit form"
     if request.method == 'POST':
         form = request.form
         yearMonth = form.get('Year') + "-" + form.get('Month')
         report = Rain.query.filter(Rain.DATE.startswith(yearMonth)).all()
-        return render_template('monthlyReport.html', monthlyReport = report, yearMonth = yearMonth)
+        return render_template('DailyReport.html', dailyReport = report, yearMonth = yearMonth)
 
 if __name__ == "__main__":
     app.run(debug=True)
