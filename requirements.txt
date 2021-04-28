@@ -6,7 +6,6 @@ beautifulsoup4==4.8.2
 blinker==1.4
 certifi==2019.11.28
 chardet==3.0.4
-click==7.1.2
 cloud-init==18.2
 colorama==0.3.7
 command-not-found==0.3
@@ -60,7 +59,6 @@ six==1.15.0
 soupsieve==1.9.5
 SQLAlchemy==1.4.11
 ssh-import-id==5.7
-tweepy==3.8.0
 Twisted==17.9.0
 typing-extensions==3.7.4.3
 ufw==0.35
