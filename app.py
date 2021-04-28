@@ -29,7 +29,10 @@ def dailyReport():
         return f"The URL /dailyReport is accessed directly. Try going to '/' to submit form"
     if request.method == 'POST':
         form = request.form
-        yearMonth = form.get('Year') + "-" + form.get('Month')
+        if len(str(form.get('Month'))) == 1:
+            yearMonth = form.get('Year') + "-0" + form.get('Month')
+        else:
+            yearMonth = form.get('Year') + "-" + form.get('Month')
         report = Rain.query.filter(Rain.DATE.startswith(yearMonth)).all()
         return render_template('DailyReport.html', dailyReport = report, yearMonth = yearMonth)
 
