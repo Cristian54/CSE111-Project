@@ -2,31 +2,31 @@ import sqlite3, csv
 from sqlite3 import Error
 
 def openConnection(_dbFile):
-    print("++++++++++++++++++++++++++++++++++")
-    print("Open database: ", _dbFile)
+   # print("++++++++++++++++++++++++++++++++++")
+   # print("Open database: ", _dbFile)
 
     conn = None
     try:
         conn = sqlite3.connect(_dbFile)
-        print("success")
+        #print("success")
     except Error as e:
         print(e)
 
-    print("++++++++++++++++++++++++++++++++++")
+   # print("++++++++++++++++++++++++++++++++++")
 
     return conn
 
 def closeConnection(_conn, _dbFile):
-    print("++++++++++++++++++++++++++++++++++")
-    print("Close database: ", _dbFile)
+   # print("++++++++++++++++++++++++++++++++++")
+   # print("Close database: ", _dbFile)
 
     try:
         _conn.close()
-        print("success")
+    #    print("success")
     except Error as e:
         print(e)
 
-    print("++++++++++++++++++++++++++++++++++")
+    #print("++++++++++++++++++++++++++++++++++")
 
 def dropTables(con):
     #con.execute("DROP TABLE IF EXISTS SeattleRainfall")
@@ -94,24 +94,25 @@ def createTables(con):
         con.execute(sql)
 
         con.commit()
-        print("Tables successfully created")
+       # print("Tables successfully created")
 
     except Error as e:
         con.rollback()
         print(e)
 
-    print("++++++++++++++++++++++++++++++++++")
+    #print("++++++++++++++++++++++++++++++++++")
 
 def deleteTables(conn):
     conn.execute("DELETE FROM AnnualReport")
     conn.execute("DELETE FROM DailyReport")
     conn.execute("DELETE FROM RangedReport")
+    conn.execute("DELETE FROM MonthlyReport")
     
     conn.commit()
 
 def populateSeattleRainfall(_conn):
-    print("++++++++++++++++++++++++++++++++++")
-    print("Populating SeattleRainfall")
+   # print("++++++++++++++++++++++++++++++++++")
+   # print("Populating SeattleRainfall")
     
     try:
         cur = _conn.cursor()
@@ -123,21 +124,23 @@ def populateSeattleRainfall(_conn):
 
         cur.executemany("INSERT INTO SeattleRainfall VALUES (?, ?, ?, ?, ?);", to_db)
         _conn.commit()
-        print("Bulk loading was successful")
+       # print("Bulk loading was successful")
 
     except Error as e:
         _conn.rollback()
         print(e)
 
-    print("++++++++++++++++++++++++++++++++++")
+    #print("++++++++++++++++++++++++++++++++++")
 
 def getAnnualReport(con):
+    print("\n-------------------------------------------------------------------")
+    
     year = input("\nEnter a year: ")
     
     '''
     sql = """ 
-        SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
-            SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
+        SELECT ROUND(AVG(PRCP), 2), COUNT(RAIN), (
+            SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 2)
             FROM SeattleRainfall
             WHERE strftime('%Y', DATE) = ?
         ) avgTemp
@@ -164,17 +167,15 @@ def getAnnualReport(con):
     cur.execute(sql, (year, year, year,)) 
     report = cur.fetchone()
     
-    #cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[2], report[1],))
-    #con.commit()
-    
-    #print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
     print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average max temperature (F):", report[2], "\n Average min temperature (F):", report[3], "\n Total number of rainy days:", report[1])
 
 def getMonthlyReport(con):
+    print("\n-------------------------------------------------------------------")
+    
     year = input("\nEnter a year: ")
     
     sql = """ 
-    SELECT COUNT(RAIN), ROUND(AVG(PRCP), 3)
+    SELECT COUNT(RAIN), ROUND(AVG(PRCP), 2)
     FROM SeattleRainfall
     WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
     GROUP BY strftime('%m', DATE) """
@@ -184,7 +185,7 @@ def getMonthlyReport(con):
     rainPrcp = cur.fetchall()
     
     sql = """ 
-    SELECT strftime('%m-%Y', DATE), ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
+    SELECT strftime('%m-%Y', DATE), ROUND((AVG(TMAX)+AVG(TMIN))/2, 2)
     FROM SeattleRainfall
     WHERE strftime('%Y', DATE) = ?
     GROUP BY strftime('%m', DATE) """ 
@@ -193,14 +194,17 @@ def getMonthlyReport(con):
     monthTemp = cur.fetchall()
     
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] 
-    print("\nMonthly report for the year", year,":\n")
     
+    print("\nMonthly report for the year", year,":\n")
     for month, row, roww in zip(months, monthTemp, rainPrcp):
         print(month, ":\n  Average temperature (F):", row[1], "\n  Number of rainy days:", roww[0], "\n  Average precipitation (in inches):", roww[1], "\n")
     
-def getDailyReport(con, year, month):
-    #year = input("\nEnter a year: ")
-    #month = input("Enter a month (01-12): ")
+def getDailyReport(con):
+    print("\n-------------------------------------------------------------------")
+    
+    year = input("\nEnter a year (1948-2017): ")
+    month = input("Enter a month (01-12): ")
+
     date = year + "-" + month
     
     sql = """
@@ -213,9 +217,7 @@ def getDailyReport(con, year, month):
     cur.execute(sql, (date,))
     report = cur.fetchall()
     
-    return report
-    
-    print("\nDaily report for", month + "-" + year, ":\n")
+    print("\nDaily report for", month + "-" + year + ":\n")
     
     for row in report:
         if row[4] == 'TRUE':
@@ -223,9 +225,11 @@ def getDailyReport(con, year, month):
         else:
             rain = 'Did not rain'
             
-        print("Date:", row[0], "|", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
+        print(row[0], "|", rain, "| Precipitation:", row[1], "| Highest/Lowest temperature (F):", row[2], "/", row[3])
 
 def getRangedReport(con):
+    print("\n-------------------------------------------------------------------")
+    
     startDate = input("Enter a starting date (YYYY-MM-DD): ") 
     endDate = input("Enter an end date (YYYY-MM-DD): ")
     
@@ -247,10 +251,12 @@ def getRangedReport(con):
     tempDays = cur.fetchone()
     
     print()
-    print("Report starting from", startDate, "and ending on", endDate, ": \n Average Precipitation (in inches):", 
+    print("Report starting from", startDate, "and ending on", endDate + ": \n Average Precipitation (in inches):", 
           rainPrcp[1], "\n Average temperature (F):", tempDays[0], "\n Highest/Lowest temperature (F):", tempDays[2], "/", tempDays[3], "\n Number of rainy days:", rainPrcp[0], "\n Total number of days:", tempDays[1])
 
 def getLeastOrMostRain(conn):
+    print("\n-------------------------------------------------------------------")
+    
     choice = input("Do you want to list the years with the most/least rain, or get top single year? (list/single): ")
     print()
     
@@ -330,6 +336,8 @@ def getLeastOrMostRain(conn):
                 print(year[0] + ":", year[1], "rainy days")
 
 def rainDays(conn):
+    print("\n-------------------------------------------------------------------")
+    
     sql = """ 
     SELECT COUNT(*) as Rained, (
         SELECT COUNT(*)
@@ -346,6 +354,8 @@ def rainDays(conn):
     print("\nFrom 1948-01-01 to 2017-12-14, or 25,548 recorded days, Seattle had", rain[0], "days with rain and", rain[1], "days without rain.\n")
 
 def getDayInAllYears(con):
+    print("\n-------------------------------------------------------------------")
+    
     day = input("\nEnter a day (MM-DD): ")
 
     sql = """
@@ -363,9 +373,11 @@ def getDayInAllYears(con):
         else:
             rain = 'Did not rain'
 
-        print("Date:", day[0], "| Precipitation:", day[1], "| Max temperature (F):", day[2], "| Min temperature (F):", day[3], "|", rain)
+        print(day[0], "| Precipitation:", day[1], "| Max temperature (F):", day[2], "| Min temperature (F):", day[3], "|", rain)
 
 def getColdestHottestDays(con):
+    print("\n-------------------------------------------------------------------")
+    
     choice = input("\nDo you want to list the hottest or coldest days? (H/C): ")
     
     cur = con.cursor()
@@ -463,6 +475,8 @@ def getColdestHottestDays(con):
                 print("Date:", day[0], "| Temperature (F):", day[1], "|", rain)
 
 def insertIntoSeattleRainfall(conn):
+    print("\n-------------------------------------------------------------------")
+    
     date = input("Enter the date (YYYY-MM-DD): ")
     prcp = input("Enter the precipitation: ")
     maxTemp = input("Enter the day's highest temperature (F): ")
@@ -477,7 +491,7 @@ def insertIntoSeattleRainfall(conn):
     cur.execute(sql, (date, prcp, maxTemp, minTemp, rain,))
     conn.commit()
 
-def modifySeattleRainfall(conn):
+def updateSeattleRainfall(conn):
     currDate = input("Enter the day you are modifying (YYYY-MM-DD): ")
     newPrcp = input("Enter the day's precipitation: ")
     newMaxTemp = input("Enter the day's highest temperature (F): ")
@@ -491,9 +505,18 @@ def modifySeattleRainfall(conn):
         RAIN = ?
     where DATE = ?
     """
-
     cur = conn.cursor()
     cur.execute(sql, (newPrcp, newMaxTemp, newMinTemp, newRain, currDate,))
+    conn.commit()
+
+def deleteSeattleRainfall(conn):
+    usrDate = input("Input the date for which you would like the data to be deleted from the database (YYYY-MM-DD): ")
+    sql = """
+    delete from SeattleRainfall
+    where DATE = ?
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (usrDate))
     conn.commit()
            
 def main():
@@ -509,26 +532,27 @@ def main():
         
         #deleteTables(conn)
         
-        print("This program allows you to view rainfall statistics from the city of Seattle, WA. There is information dating back to 1948 all the way up to 2017. \n")
+        print("\nThis program allows you to view rainfall statistics from the city of Seattle, WA. There is information dating back to 1948 all the way up to 2017. \n")
          
         functions = 1
         while functions != '0':
-            print("-------------------------------------------------------------------")
+            print("\n-------------------------------------------------------------------")
             print("Below are the available options, each numbered to specify which option you want to choose: \n")
             
             options = ["(1) Annual Report: Get average data from a specified year", 
                        "(2) Monthly Report: Get an annual report broken down into months",
                        "(3) Daily Report: Get the data from every day in a specified month", 
                        "(4) Ranged Report: Get average data from specified start and end dates",
-                       "(5) Get the single year with the most or least rain, or list a specified amount of years by most/least rain", 
+                       "(5) Get the year with the most or least rain, or list a specified amount of years by most/least rain", 
                        "(6) Get the total number of days it rained and days it did not rain from 1948 to 2017",
                        "(7) Get the information from a specific day from every year available",
                        "(8) List the hottest or coldest days from the database, amount specificed by user",
                        "(9) Insert data into the database, e.g. a day prior to 1948 or after 2017",
-                       "(10) Modify a specific day's data in the database"]
+                       "(10) Update a specific day's data in the database,",
+                       "(11) Delete a specific day's data from the database"]
             
             print("Reports: \n ", options[0], "\n ", options[1], "\n ", options[2], "\n ", options[3])
-            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8], "\n ", options[9])
+            print("Other options: \n ", options[4], "\n ", options[5], "\n ", options[6], "\n ", options[7], "\n ", options[8], "\n ", options[9], "\n ", options[10])
           
             functions = input("\nChoose what you would like to do: ")
             
@@ -551,10 +575,13 @@ def main():
             elif functions == '9':
                 insertIntoSeattleRainfall(conn)
             elif functions == '10':
-                modifySeattleRainfall(conn)
+                updateSeattleRainfall(conn)
+            elif functions == '11':
+                deleteSeattleRainfall(conn)
             elif functions == '0':
                 print("The program is now closing")
-                closeConnection(conn, database)
+    
+    closeConnection(conn, database)
 
 if __name__ == '__main__':
     main()
