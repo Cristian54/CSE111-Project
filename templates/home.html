@@ -18,7 +18,7 @@
 
     <div class="jumbotron">
       <div class="container">
-        <h2 class="display-5">This web app will display rainfall statistics from the city of Seattle, WA between the years 1958-2017. A total of {{ "{:,}".format(days) }} days.</h2>
+        <h2 class="display-5">This web app will display rainfall statistics from the city of Seattle, WA between the years 1948-2017. A total of {{ "{:,}".format(days) }} days.</h2>
         <a href="https://www.kaggle.com/rtatman/did-it-rain-in-seattle-19482017" target="_blank">The data comes from this dataset in Kaggle</a>
       </div>
     </div>
@@ -26,39 +26,39 @@
     <div class="button-container">
       <form action="dailyReport" method = "POST">
         <p>Daily report: Get daily statistics for a given month and year</p>
-        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
-        <p>Month (01-12): <input type = "text" name = "Month" /></p>
+        <p>Year (1948-2017): <input type = "number" min="1948" max="2017" name = "Year" required/></p>
+        <p>Month (01-12): <input type = "number" min="01" max="12" name = "Month" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="RangedReport" method = "POST">
         <p>Ranged report: Get data from a specified period of time</p>
-        <p>Start (YYYY-MM-DD): <input type = "text" name = "start" /></p>
-        <p>End (YYYY-MM-DD): <input type = "text" name = "end" /></p>
+        <p>Start Date: <input type = "date" min="1948-01-01" max="2017-12-13" name = "start" required/></p>
+        <p>End Date: <input type = "date" min="1948-01-02" max="2017-12-14" name = "end" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="annualReport" method = "POST">
         <p>Annual report: Get average statistics for a given year</p>
-        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
+        <p>Year (1948-2017): <input type = "number" min="1948" max="2017" name = "Year" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="monthlyReport" method = "POST">
         <p>Monthly report: Get an annual report broken down into months</p>
-        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
+        <p>Year (1948-2017): <input type = "number" min="1948" max="2017" name = "Year" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="OneDay" method = "POST">
         <p>Get data from a specific day each year</p>
-        <p>Day (MM-DD): <input type = "text" name = "day" /></p>
+        <p>Day (MM-DD): <input type = "text" minlength="5" maxlength="5" name = "day" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="lmRain" method = "POST">
         <p>List the years with the most or least rain</p>
-        <p>Least or Most (L/M): <input type = "text" name = "listChoice" /></p>
+        <p>Least or Most (L/M): <input type = "text" minlength="1" maxlength="1" pattern="[L]|[M]" name = "listChoice" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
