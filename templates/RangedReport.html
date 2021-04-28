@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+
+    <div class="jumbotron">
+        <div class="container">
+          <h3 class="display-5">Ranged report starting from {{start}} to {{end}}</h3>
+        </div>
+    </div>
+
+    <div>
+        <h6>Total number of days: {{ days }}</h6>
+        <h6>Number of rainy days: {{ rain[0][0] }}</h6>
+        <h6>Average Precipitation: {{ rain[0][1] }} in</h6>
+        <h6>Most Precipitation: {{ prcp[0][1] }} in on {{ prcp[0][0] }}</h6>
+        <h6>Max Temperature: {{ hotDay[0][1] }} F on {{ hotDay[0][0] }}</h6>
+        <h6>Min Temperature: {{ coldDay[0][1] }} F on {{ coldDay[0][0] }}</h6>
+    </div>
+
+</div> 
+
+{% endblock %}
+ 

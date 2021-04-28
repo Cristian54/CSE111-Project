@@ -81,7 +81,6 @@ WHERE strftime('%Y-%m', DATE) = '1996-01'
 GROUP BY strftime('%d', DATE)
 
 --Query to get a ranged report (specified start and end dates)
-INSERT INTO RangedReport (rr_avgPrpc, rr_avgTemp, rr_numRainDays, rr_totalDays)
 SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
     SELECT COUNT(RAIN)
     FROM SeattleRainfall
