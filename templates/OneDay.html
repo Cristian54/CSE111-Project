@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <div class="container">
-          <h4 class="display-5">Daily report for {{yearMonth}}</h4>
+          <h4 class="display-5">Data for {{day}} in all available years</h4>
         </div>
     </div>
 
@@ -19,7 +19,7 @@
         <th>Rained</th>
       </tr>
 
-      {% for day in dailyReport %}
+      {% for day in days %}
       <tr>
           <td>{{ day.DATE }}</td>
           <td>{{ day.PRCP }}</td>

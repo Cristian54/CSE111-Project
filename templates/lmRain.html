@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <div class="container">
-          <h4 class="display-5">Daily report for {{yearMonth}}</h4>
+          <h4 class="display-5">Years listed by the {{choice}} rainy days</h4>
         </div>
     </div>
 
@@ -12,20 +12,14 @@
 
     <table style="width:100%">
       <tr>
-        <th>Date</th>
-        <th>Precipitation (in)</th>
-        <th>Max Temperature (F)</th>
-        <th>Min Temperature (F)</th>
-        <th>Rained</th>
+        <th>Year</th>
+        <th>Number of rainy days</th>
       </tr>
 
-      {% for day in dailyReport %}
+      {% for year in years %}
       <tr>
-          <td>{{ day.DATE }}</td>
-          <td>{{ day.PRCP }}</td>
-          <td> {{ day.TMAX }}</td>
-          <td>{{ day.TMIN }}</td>
-          <td>{{ day.RAIN }}</td>
+          <td>{{ year[0] }}</td>
+          <td>{{ year[1] }}</td>
       </tr>
       {% endfor %}
 

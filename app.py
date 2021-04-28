@@ -66,7 +66,7 @@ def monthlyReport():
 @app.route('/RangedReport', methods = ['POST', 'GET'])  
 def RangedReport():
     if request.method == 'GET':
-        return f"The URL /monthlyReport is accessed directly. Try going to '/' to submit form"
+        return f"The URL /RangedReport is accessed directly. Try going to '/' to submit form"
     if request.method == 'POST':
         formData = request.form
         start = formData.get('start')
@@ -79,6 +79,33 @@ def RangedReport():
         topPrcp = db.session.query(db.func.strftime('%m-%d-%Y', Rain.DATE), db.func.max(Rain.PRCP)).filter(Rain.DATE >= start, Rain.DATE <= end).all()
         
         return render_template('RangedReport.html', start = start, end = end, days = totDays, rain = rainPrcp, hotDay = hottest, coldDay = coldest, prcp = topPrcp)   
+
+@app.route('/OneDay', methods = ['POST', 'GET'])
+def OneDay():
+    if request.method == 'GET':
+        return f"The URL /OneDay is accessed directly. Try going to '/' to submit form"
+    if request.method == 'POST':
+        formData = request.form
+        day = formData.get('day')
+        days = Rain.query.filter(Rain.DATE.endswith(day)).all()
+        return render_template('OneDay.html', day = day, days = days)
+
+@app.route('/lmRain', methods = ['POST', 'GET'])
+def lmRain():
+    if request.method == 'GET':
+        return f"The URL /OneDay is accessed directly. Try going to '/' to submit form"
+    if request.method == 'POST':
+        formData = request.form
+        choice = formData.get('listChoice')
+        
+        if choice == 'M':
+            yearList = db.session.query(db.func.strftime('%Y', Rain.DATE), db.func.count(Rain.RAIN)).filter(Rain.RAIN == 'TRUE').group_by(db.func.strftime('%Y', Rain.DATE)).order_by(db.func.count(Rain.RAIN).desc()).all()
+            choice = 'most'
+            return render_template('lmRain.html', choice = choice, years = yearList)
+        elif choice == 'L':
+            yearList = db.session.query(db.func.strftime('%Y', Rain.DATE), db.func.count(Rain.RAIN)).filter(Rain.RAIN == 'TRUE').group_by(db.func.strftime('%Y', Rain.DATE)).order_by(db.func.count(Rain.RAIN).asc()).all()
+            choice = 'least'
+            return render_template('lmRain.html', choice = choice, years = yearList)
         
 if __name__ == "__main__":
     app.run(debug=True)
