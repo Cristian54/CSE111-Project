@@ -23,32 +23,33 @@
       </div>
     </div>
     
-    <form action="dailyReport" method = "POST">
-      <p>Daily report: Get daily statistics from a given month and year</p>
-      <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
-      <p>Month (01-12): <input type = "text" name = "Month" /></p>
-      <p><input type = "submit" value = "Submit" /></p>
-    </form>
-    
-    <form action="annualReport" method = "POST">
-      <p>Annual report: Get average statistics for a given year</p>
-      <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
-      <p><input type = "submit" value = "Submit" /></p>
-    </form>
+    <div class="button-container">
+      <form action="dailyReport" method = "POST">
+        <p>Daily report: Get daily statistics for a given month and year</p>
+        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
+        <p>Month (01-12): <input type = "text" name = "Month" /></p>
+        <p><input type = "submit" value = "Submit" /></p>
+      </form>
 
-    <form action="monthlyReport" method = "POST">
-      <p>Monthly report: Get an annual report broken down into months</p>
-      <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
-      <p><input type = "submit" value = "Submit" /></p>
-    </form>
+      <form action="RangedReport" method = "POST">
+        <p>Ranged report: Get data from a specified period of time</p>
+        <p>Start (YYYY-MM-DD): <input type = "text" name = "start" /></p>
+        <p>End (YYYY-MM-DD): <input type = "text" name = "end" /></p>
+        <p><input type = "submit" value = "Submit" /></p>
+      </form>
 
-    <form action="RangedReport" method = "POST">
-      <p>Ranged report: Get data from a specified period</p>
-      <p>Start (YYYY-MM-DD): <input type = "text" name = "start" /></p>
-      <p>End (YYYY-MM-DD): <input type = "text" name = "end" /></p>
-      <p><input type = "submit" value = "Submit" /></p>
-    </form>
+      <form action="annualReport" method = "POST">
+        <p>Annual report: Get average statistics for a given year</p>
+        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
+        <p><input type = "submit" value = "Submit" /></p>
+      </form>
 
+      <form action="monthlyReport" method = "POST">
+        <p>Monthly report: Get an annual report broken down into months</p>
+        <p>Year (1948-2017): <input type = "text" name = "Year" /></p>
+        <p><input type = "submit" value = "Submit" /></p>
+      </form>
+    </div>
 
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -75,13 +76,19 @@
       }
       form {
         /* Center the form on the page */
-        margin: 0 auto;
+        margin: 0 auto; 
         width: 500px;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
+        margin-left: 80px;
+        margin-right: 10px;
         /* Form outline */
         padding: 1em;
         border: 2px solid rgb(255, 254, 254);
         border-radius: 2em;
+      }
+      .button-container form,
+      .button-container form div {
+        display: inline-block;
       }
   </style>
 

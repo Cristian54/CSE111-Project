@@ -8,6 +8,8 @@
         </div>
     </div>
 
+    <div style="overflow-x:auto;">
+
     <table style="width:100%">
       <tr>
         <th>Month</th>
@@ -30,7 +32,21 @@
       {% endfor %}
 
     </table>
+
+    </div>
 </div> 
+
+<style>
+  table {
+    margin-bottom: 20px;
+  }
+  th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid rgb(247, 245, 245);
+  }
+  tr:hover {background-color: #666565;}
+</style>
 
 {% endblock %}
  
