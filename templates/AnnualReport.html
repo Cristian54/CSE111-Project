@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+
+    <div class="jumbotron">
+        <div class="container">
+          <h3 class="display-5">Annual report for {{year}}</h3>
+        </div>
+    </div>
+
+    <div>
+        <h6>Average Precipitation: {{ avgPrcp }} in</h6>
+        <h6>Average Max Temperature: {{ avgMaxTemp }} F</h6>
+        <h6>Average Min Temperature: {{ avgMinTemp }} F</h6>
+        <h6>Total number of rainy days: {{ rain }}</h6>
+    </div>
+
+</div> 
+      
+<a href = "/">Go back to home page</a>
+
+{% endblock %}
+ 

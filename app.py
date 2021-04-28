@@ -29,7 +29,7 @@ def home_page():
 
 
 @app.route('/dailyReport', methods = ['POST', 'GET'])
-def monthlyReport():
+def dailyReport():
     if request.method == 'GET':
         return f"The URL /dailyReport is accessed directly. Try going to '/' to submit form"
     if request.method == 'POST':
@@ -37,6 +37,23 @@ def monthlyReport():
         yearMonth = form.get('Year') + "-" + form.get('Month')
         report = Rain.query.filter(Rain.DATE.startswith(yearMonth)).all()
         return render_template('DailyReport.html', dailyReport = report, yearMonth = yearMonth)
+
+
+@app.route('/annualReport', methods = ['POST', 'GET'])
+def annualReport():
+    if request.method == 'GET':
+        return f"The URL /annualReport is accessed directly. Try going to '/' to submit form"
+    if request.method == 'POST':
+        formData = request.form
+        year = formData.get('Year')
+        
+        numRainyDays = Rain.query.filter(Rain.DATE.startswith(year), Rain.RAIN == 'TRUE').count()
+        avgPrcp = round(db.session.query(db.func.avg(Rain.PRCP)).filter(Rain.DATE.startswith(year), Rain.RAIN == 'TRUE').scalar(), 3)
+        avgMaxTemp = round(db.session.query(db.func.avg(Rain.TMAX)).filter(Rain.DATE.startswith(year)).scalar())
+        avgMinTemp = round(db.session.query(db.func.avg(Rain.TMIN)).filter(Rain.DATE.startswith(year)).scalar())
+        
+        return render_template('AnnualReport.html', year = year, rain = numRainyDays, avgPrcp = avgPrcp, avgMaxTemp = avgMaxTemp, avgMinTemp = avgMinTemp)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

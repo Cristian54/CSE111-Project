@@ -54,7 +54,7 @@ SELECT AVG(PRCP), (AVG(TMAX)+AVG(TMIN))/2, (
 FROM SeattleRainfall
 WHERE strftime('%Y', DATE) = '1999'
 --Modified the above query to get the avg precipitation from only rainy days since thats the days where there is precipitation
-SELECT AVG(PRCP), COUNT(RAIN), (
+SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
     SELECT (AVG(TMAX)+AVG(TMIN))/2
     FROM SeattleRainfall
     WHERE strftime('%Y', DATE) = '1999'
@@ -209,3 +209,21 @@ DELETE FROM AnnualReport
 DELETE FROM MonthlyReport
 DELETE FROM DailyReport
 DELETE FROM RangedReport
+
+
+
+
+
+
+SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
+    SELECT ROUND(AVG(TMAX))
+    FROM SeattleRainfall
+    WHERE strftime('%Y', DATE) = '1999'
+    ) avgMaxTemp, 
+    (
+    SELECT ROUND(AVG(TMIN))
+    FROM SeattleRainfall
+    WHERE strftime('%Y', DATE) = '1999'
+    ) avgMinTemp
+FROM SeattleRainfall
+WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = '1999'

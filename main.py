@@ -134,6 +134,7 @@ def populateSeattleRainfall(_conn):
 def getAnnualReport(con):
     year = input("\nEnter a year: ")
     
+    '''
     sql = """ 
         SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
             SELECT ROUND((AVG(TMAX)+AVG(TMIN))/2, 3)
@@ -143,14 +144,31 @@ def getAnnualReport(con):
         FROM SeattleRainfall
         WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
         """
+        '''
+        
+    sql = """
+        SELECT ROUND(AVG(PRCP), 3), COUNT(RAIN), (
+            SELECT ROUND(AVG(TMAX))
+            FROM SeattleRainfall
+            WHERE strftime('%Y', DATE) = ?
+            ) avgMaxTemp, 
+            (
+            SELECT ROUND(AVG(TMIN))
+            FROM SeattleRainfall
+            WHERE strftime('%Y', DATE) = ?
+            ) avgMinTemp
+        FROM SeattleRainfall
+        WHERE RAIN = 'TRUE' AND strftime('%Y', DATE) = ?
+            """
     cur = con.cursor()
-    cur.execute(sql, (year, year,)) 
+    cur.execute(sql, (year, year, year,)) 
     report = cur.fetchone()
     
     #cur.execute("""INSERT INTO AnnualReport VALUES(?, ?, ?, ?)""", (year, report[0], report[2], report[1],))
     #con.commit()
     
-    print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
+    #print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average temperature (F):", report[2], "\n Total number of rainy days:", report[1])
+    print("\nAnnual Report for the year", year, ": \n Average precipitation (in inches):", report[0], "\n Average max temperature (F):", report[2], "\n Average min temperature (F):", report[3], "\n Total number of rainy days:", report[1])
 
 def getMonthlyReport(con):
     year = input("\nEnter a year: ")

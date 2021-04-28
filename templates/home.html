@@ -23,12 +23,23 @@
       </div>
     </div>
 
+    <div>
+      <p>Daily report: Get daily statistics from a given month and year</p>
+      <form action="dailyReport" method = "POST">
+        <p>Year (1948-2017)<input type = "text" name = "Year" /></p>
+        <p>Month (01-12)<input type = "text" name = "Month" /></p>
+        <p><input type = "submit" value = "submit" /></p>
+      </form>
+    </div>
 
-    <form action="dailyReport" method = "POST">
-      <p>Year (1948-2017)<input type = "text" name = "Year" /></p>
-      <p>Month (01-12)<input type = "text" name = "Month" /></p>
-      <p><input type = "submit" value = "submit" /></p>
-    </form>
+
+    <div>
+      <p>Annual report: Get average statistics for a given year</p>
+      <form action="annualReport" method = "POST">
+        <p>Year (1948-2017)<input type = "text" name = "Year" /></p>
+        <p><input type = "submit" value = "submit" /></p>
+      </form>
+    </div>
 
 
    
