@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+
+    <div class="jumbotron">
+        <div class="container">
+          <h4 class="display-5">Monthly report for {{year}}</h4>
+        </div>
+    </div>
+
+    <table style="width:100%">
+      <tr>
+        <th>Month</th>
+        <th>Average Max Temperature (F)</th>
+        <th>Average Min Temperature (F)</th>
+        <th>Average Precipitation (in)</th>
+        <th>Days Rained</th>
+      </tr>
+
+      {% for row in monthTemp %}
+        {% set prcp = avgPrcp[loop.index-1] %}
+        {% set rain = rainDays[loop.index-1] %}
+      <tr>
+          <td>{{ row[0] }}</td>
+          <td>{{ row[1] }}</td>
+          <td>{{ row[2] }}</td>
+          <td>{{ prcp[0] }}</td>
+          <td>{{ rain[0] }}</td>
+      </tr>
+      {% endfor %}
+
+    </table>
+</div> 
+
+{% endblock %}
+ 
