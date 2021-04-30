@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="container">
+<div>
 
     <div class="jumbotron">
         <div class="container">
@@ -8,12 +8,60 @@
         </div>
     </div>
 
-    <div>
+    <div class="div">
         <h6>Average Precipitation: {{ avgPrcp }} in</h6>
         <h6>Average Max Temperature: {{ avgMaxTemp }} F</h6>
         <h6>Average Min Temperature: {{ avgMinTemp }} F</h6>
+        <h6>Max Temperature: {{ hotDay[0][1] }} F on {{ hotDay[0][0] }}</h6>
+        <h6>Min Temperature: {{ coldDay[0][1] }} F on {{ coldDay[0][0] }}</h6>
+        <h6>Most Precipitation: {{ prcp[0][1] }} in. on {{ prcp[0][0] }}</h6>
         <h6>Total number of rainy days: {{ rain }}</h6>
     </div>
+
+    <div style="overflow-x:auto;" class="container">
+
+        <table style="width:100%">
+          <tr>
+            <th>Date</th>
+            <th>Precipitation (in)</th>
+            <th>Max Temperature (F)</th>
+            <th>Min Temperature (F)</th>
+            <th>Rained</th>
+          </tr>
+    
+          {% for day in dailyReport %}
+          <tr>
+              <td>{{ day.DATE }}</td>
+              <td>{{ day.PRCP }}</td>
+              <td> {{ day.TMAX }}</td>
+              <td>{{ day.TMIN }}</td>
+              <td>{{ day.RAIN }}</td>
+          </tr>
+          {% endfor %}
+    
+        </table>
+    
+        </div>
+
+    <style>
+        .div {
+            text-align: center;
+            border: 5px ridge rgb(212, 205, 205); 
+            line-height: 3;
+            margin-left: 50px;
+            margin-right: 50px;
+            margin-bottom: 50px;
+        }
+        table {
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgb(247, 245, 245);
+        }
+        tr:hover {background-color: #666565;}
+    </style>
 
 </div> 
 

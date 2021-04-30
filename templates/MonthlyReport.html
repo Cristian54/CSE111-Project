@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="container">
+<div>
 
     <div class="jumbotron">
         <div class="container">
@@ -8,25 +8,27 @@
         </div>
     </div>
 
-    <div style="overflow-x:auto;">
+    <div style="overflow-x:auto;" class="container">
 
     <table style="width:100%">
       <tr>
         <th>Month</th>
-        <th>Average Max Temperature (F)</th>
-        <th>Average Min Temperature (F)</th>
-        <th>Average Precipitation (in)</th>
+        <th>Max Temperature (F)</th>
+        <th>Min Temperature (F)</th>
+        <th>Most Precipitation (in)</th>
         <th>Days Rained</th>
       </tr>
 
-      {% for row in monthTemp %}
-        {% set prcp = avgPrcp[loop.index-1] %}
+      {% for row in months %}
+        {% set hotDay = hot[loop.index-1] %}
+        {% set coldDay = cold[loop.index-1] %}
+        {% set prcp = topPrcp[loop.index-1] %}
         {% set rain = rainDays[loop.index-1] %}
       <tr>
           <td>{{ row[0] }}</td>
-          <td>{{ row[1] }}</td>
-          <td>{{ row[2] }}</td>
-          <td>{{ prcp[0] }}</td>
+          <td>{{ hotDay[1] }} on {{hotDay[0]}}</td>
+          <td>{{ coldDay[1] }} on {{coldDay[0]}}</td>
+          <td>{{ prcp[1] }} on {{prcp[0]}}</td>
           <td>{{ rain[0] }}</td>
       </tr>
       {% endfor %}

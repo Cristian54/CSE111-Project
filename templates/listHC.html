@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <div class="container">
-          <h2 class="display-5">Data for {{day}} in all available years</h2>
+          <h4 class="display-5">Listing the top {{size}} {{choice}} days from 1948 to 2017</h4>
         </div>
     </div>
 
@@ -13,19 +13,15 @@
     <table style="width:100%">
       <tr>
         <th>Date</th>
-        <th>Precipitation (in)</th>
-        <th>Max Temperature (F)</th>
-        <th>Min Temperature (F)</th>
-        <th>Rained</th>
+        <th>Temperature (F)</th>
+        <th>Rain</th>
       </tr>
 
-      {% for day in days %}
+      {% for day in daysList %}
       <tr>
-          <td>{{ day.DATE }}</td>
-          <td>{{ day.PRCP }}</td>
-          <td> {{ day.TMAX }}</td>
-          <td>{{ day.TMIN }}</td>
-          <td>{{ day.RAIN }}</td>
+          <td>{{ day[0] }}</td>
+          <td>{{ day[1] }}</td>
+          <td>{{ day[2] }}</td>
       </tr>
       {% endfor %}
 

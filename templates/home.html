@@ -32,26 +32,26 @@
       </form>
 
       <form action="RangedReport" method = "POST">
-        <p>Ranged report: Get data from a specified period of time</p>
+        <p>Ranged report: Get average data from a specified period of time</p>
         <p>Start Date: <input type = "date" min="1948-01-01" max="2017-12-13" name = "start" required/></p>
         <p>End Date: <input type = "date" min="1948-01-02" max="2017-12-14" name = "end" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="annualReport" method = "POST">
-        <p>Annual report: Get average statistics for a given year</p>
+        <p>Annual report: Get average and daily statistics for a given year</p>
         <p>Year (1948-2017): <input type = "number" min="1948" max="2017" name = "Year" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="monthlyReport" method = "POST">
-        <p>Monthly report: Get an annual report broken down into months</p>
+        <p>Monthly report: Get a year's data broken down into months</p>
         <p>Year (1948-2017): <input type = "number" min="1948" max="2017" name = "Year" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
 
       <form action="OneDay" method = "POST">
-        <p>Get data from a specific day each year</p>
+        <p>Get data from a specific day in all available years</p>
         <p>Day (MM-DD): <input type = "text" minlength="5" maxlength="5" name = "day" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
       </form>
@@ -60,6 +60,13 @@
         <p>List the years with the most or least rain</p>
         <p>Least or Most (L/M): <input type = "text" minlength="1" maxlength="1" pattern="[L]|[M]" name = "listChoice" required/></p>
         <p><input type = "submit" value = "Submit" /></p>
+      </form>
+
+      <form action="listHC" method = "POST">
+        <p>List the hottest or coldest days</p>
+        <p>Coldest or Hottest (C/H): <input type="text" minlength="1" maxlength="1" pattern="[C]|[H]" name = "listChoice" required/></p>
+        <p>How many days do you want to list? <input type = "number" minlength="1" name="size" required/></p>
+        <p><input type="submit" value="Submit"/></p>
       </form>
 
     </div>
@@ -80,12 +87,12 @@
 
   <style>
       body {
-          background-color: #1f1e25;
+          background-color: #3e3e42;
           color: white
       }
       .jumbotron {
         background-color: #1f1e25;
-        color: white
+        color: white;
       }
       form {
         /* Center the form on the page */
@@ -96,7 +103,7 @@
         margin-right: 10px;
         /* Form outline */
         padding: 1em;
-        border: 2px solid rgb(255, 254, 254);
+        border: 4px ridge rgb(255, 254, 254);
         border-radius: 2em;
       }
       .button-container form,
